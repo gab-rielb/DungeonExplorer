@@ -30,8 +30,9 @@ namespace DungeonExplorer
             } 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 25)
                 {
+                    Console.WriteLine("Erroneous input, default player name used instead.");
                     _name = "default_player";
                 }
                 else 
