@@ -66,7 +66,6 @@ namespace DungeonExplorer
             }
             set 
             {
-                _inventory.Clear();
                 _inventory = value;
             }
         }
@@ -74,18 +73,22 @@ namespace DungeonExplorer
         // Player Constructor
         public Player(string name, int health, List<string> inventory) 
         {
-            Name = name;
-            Health = health;
-            Inventory = inventory;
+            _name = name;
+            _health = health;
+            _inventory = inventory;
         }
 
         // Player Methods
         public void PickUpItem(string item)
         {
-
+            _inventory.Add(item);
         }
         public string InventoryContents()
         {
+            if (_inventory.Count == 0)
+            {
+                return "Empty";
+            }
             return string.Join(", ", _inventory);
         }
     }

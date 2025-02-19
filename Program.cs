@@ -13,8 +13,7 @@ namespace DungeonExplorer
             //Development begins
             Game game = new Game();
             game.Start();
-            Console.WriteLine("Waiting for your Implementation");
-            Console.WriteLine("Press any key to exit...");
+            Console.WriteLine("\n\nEnd of code. Press any key to exit...");
             Console.ReadKey();
         }
     }

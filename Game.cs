@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Media;
 
 namespace DungeonExplorer
@@ -10,16 +11,43 @@ namespace DungeonExplorer
 
         public Game()
         {
-            // Initialize the game with one room and one player
-
+            player = new Player("", 0, new List<string>());
+            currentRoom = new Room("");
         }
         public void Start()
         {
-            // Change the playing logic into true and populate the while loop
-            bool playing = false;
+            bool playing = true;
             while (playing)
             {
-                // Code your playing logic here
+                try
+                {
+
+                    // Setting up player...
+                    Console.WriteLine("Please enter player's name: ");
+                    string playerName = Console.ReadLine();
+                    player.Name = playerName;
+
+                    player.Health = 100;
+
+                    player.Inventory = new List<string>();
+
+                    Console.WriteLine($"Player: {player.Name} with {player.Health} health created." +
+                        "\nPress any key to begin.");
+                    Console.ReadKey();
+
+                    //playing = false;
+
+                    while (player.Health > 0) 
+                    {
+                        // Actual game logic here.
+                    }
+
+                }
+                catch (ArgumentNullException e)
+                {
+                    Console.WriteLine($"Error: {e.ParamName} cannot be null.\nPress any key to continue.");
+                    Console.ReadKey();
+                }
             }
         }
     }
