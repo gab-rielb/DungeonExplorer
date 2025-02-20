@@ -60,7 +60,7 @@ namespace DungeonExplorer
                             break;
                         case "progress":
                             Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
-                            break;5f
+                            break;
                         case "":
                             break;
                         default:
