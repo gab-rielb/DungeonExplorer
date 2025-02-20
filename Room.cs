@@ -61,11 +61,13 @@ namespace DungeonExplorer
                     int damage = _random.Next(5, 16);
                     player.Health -= damage;
                     Console.WriteLine($"\nYou fell into a small trap!!\nYou took {damage} damage!");
+                    roomsPassed++;
                     break;
                 case HeavyDamage:
                     damage = _random.Next(15, 26);
                     player.Health -= damage;
                     Console.WriteLine($"\nA monster attacked you!!\nYou took {damage} damage!");
+                    roomsPassed++;
                     break;
                 default:
                     Console.WriteLine("\n\n\nAn error occured genereating your room.");
