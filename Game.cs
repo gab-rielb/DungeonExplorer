@@ -38,6 +38,25 @@ namespace DungeonExplorer
                 while (player.Health > 0 && roomsPassed < 10)
                 {
                     PlayTurn();
+                    Console.WriteLine("\nType 'health' to view health" +
+                        "\nType 'progress' to view progress" +
+                        "\nPress enter to skip.");
+                    string checkstats = Console.ReadLine();
+                    switch (checkstats)
+                    {
+                        case "health":
+                            Console.WriteLine($"\n{player.Name}'s health: {player.Health}.");
+                            break;
+                        case "progress":
+                            Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
+                            break;
+                        case "":
+                            break;
+                        default:
+                            Console.WriteLine("\nInvalid option. Press any key to continue to game.");
+                            Console.ReadKey();
+                            break;
+                    }
                 }
                 if (player.Health <= 0) 
                 {
