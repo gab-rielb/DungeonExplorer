@@ -4,6 +4,17 @@ using System.Media;
 
 namespace DungeonExplorer
 {
+    /// <summary>
+    /// Player class contains the main sequence of the game.
+    /// 
+    /// Attributes:
+    /// (Player) player -> A new object of class Player (creates a player for the game)
+    /// (int) roomsPassed -> A way to keep track of how many rooms have been passed
+    /// 
+    /// Methods:
+    /// Start ->  Starts the main logic of the game, completes when game is over
+    /// PlayTurn -> Logic for player choice for each iteration while game is not over
+    /// </summary>
     internal class Game
     {
         private Player player;
@@ -49,7 +60,7 @@ namespace DungeonExplorer
                             break;
                         case "progress":
                             Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
-                            break;
+                            break;5f
                         case "":
                             break;
                         default:
