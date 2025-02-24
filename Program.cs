@@ -10,7 +10,7 @@ namespace DungeonExplorer
     {
         static void Main(string[] args)
         {
-            //Development begins
+            // Development begins
             Game game = new Game();
             game.Start();
             Console.WriteLine("\n\nEnd of code. Press any key to exit...");

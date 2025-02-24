@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Media;
+using System.Security.Authentication;
 
 namespace DungeonExplorer
 {
@@ -30,7 +31,7 @@ namespace DungeonExplorer
             bool playing = true;
             while (playing)
             {
-                // Setting up player...
+                // Setting up player
                 Console.WriteLine("Please enter player's name: ");
                 string playerName = Console.ReadLine();
                 player.Name = playerName;
@@ -39,13 +40,20 @@ namespace DungeonExplorer
 
                 player.Inventory = new List<string>();
 
-                Console.WriteLine($"\nPlayer: {player.Name} with {player.Health} health created." +
-                    "\nPress any key to begin.");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"\nPlayer: {player.Name} with {player.Health} health created.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("\nPress any key to start the game.");
                 Console.ReadKey();
 
-                playing = false;
+                // Declaring Objective
+                Console.WriteLine("\nObjective: Exit the maze." +
+                    "\nEach room will either be empty, have a trap or a monster." +
+                    "\nEach scenario will do varying damage to you." +
+                    "\nDepending on the difficulty you will have to navigate more rooms.");
 
-                Console.WriteLine("\nObjective: Exit the maze.");
+                // Game loop
+                playing = false;
                 while (player.Health > 0 && roomsPassed < 10)
                 {
                     PlayTurn();
@@ -64,18 +72,24 @@ namespace DungeonExplorer
                         case "":
                             break;
                         default:
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine("\nInvalid option. Press any key to continue to game.");
+                            Console.ForegroundColor = ConsoleColor.White;
                             Console.ReadKey();
                             break;
                     }
                 }
                 if (player.Health <= 0) 
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"\n\n{player.Name} perished in the maze.");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
                 else
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"\n\n{player.Name} successfully escaped the maze!!");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
         }
