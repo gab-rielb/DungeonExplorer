@@ -54,7 +54,9 @@ namespace DungeonExplorer
             switch (Type)
             {
                 case Pass:
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\nYou found an empty room. You moved ahead!");
+                    Console.ForegroundColor = ConsoleColor.White; 
                     roomsPassed++;
                     break;
                 case SlightDamage:

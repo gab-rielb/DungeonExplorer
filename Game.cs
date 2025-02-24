@@ -41,7 +41,7 @@ namespace DungeonExplorer
                 player.Inventory = new List<string>();
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\nPlayer: {player.Name} with {player.Health} health created.");
+                Console.WriteLine($"\nPlayer '{player.Name}' with {player.Health} health created.");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("\nPress any key to start the game.");
                 Console.ReadKey();
