@@ -49,7 +49,7 @@ namespace DungeonExplorer
             }
             set
             {
-                if (value < 1) 
+                if (value < 1 || value > 100) 
                 {
                     _health = 0;
                 }

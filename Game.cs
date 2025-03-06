@@ -6,7 +6,7 @@ using System.Security.Authentication;
 namespace DungeonExplorer
 {
     /// <summary>
-    /// Player class contains the main sequence of the game.
+    /// Game class contains the main sequence of the game.
     /// 
     /// Attributes:
     /// (Player) player -> A new object of class Player (creates a player for the game)
@@ -20,12 +20,17 @@ namespace DungeonExplorer
     {
         private Player player;
         private int roomsPassed;
+        private int forcedDirectionCounter;
+        private string forcedDirection;
 
         public Game()
         {
             player = new Player("", 0, new List<string>());
             roomsPassed = 0;
+            forcedDirectionCounter = 0;
+            forcedDirection = "";
         }
+
         public void Start()
         {
             bool playing = true;
@@ -40,7 +45,7 @@ namespace DungeonExplorer
 
                 player.Inventory = new List<string>();
 
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"\nPlayer '{player.Name}' with {player.Health} health created.");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("\nPress any key to start the game.");
@@ -48,8 +53,7 @@ namespace DungeonExplorer
 
                 // Declaring Objective
                 Console.WriteLine("\nObjective: Exit the maze." +
-                    "\nEach room will either be empty, have a trap or a monster." +
-                    "\nEach scenario will do varying damage to you." +
+                    "\nEach room will have different effects/events." +
                     "\nDepending on the difficulty you will have to navigate more rooms.");
 
                 // Game loop
@@ -59,6 +63,8 @@ namespace DungeonExplorer
                     PlayTurn();
                     Console.WriteLine("\nType 'health' to view health" +
                         "\nType 'progress' to view progress" +
+                        "\nType 'item' to use an item" +
+                        "\nType 'inventory' to view inventory" +
                         "\nPress enter to skip.");
                     string checkstats = Console.ReadLine();
                     switch (checkstats)
@@ -68,6 +74,12 @@ namespace DungeonExplorer
                             break;
                         case "progress":
                             Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
+                            break;
+                        case "item":
+                            HandleItemUse();
+                            break;
+                        case "inventory":
+                            Console.WriteLine($"\n{player.Name}'s inventory: {player.InventoryContents()}.");
                             break;
                         case "":
                             break;
@@ -93,10 +105,76 @@ namespace DungeonExplorer
                 }
             }
         }
+
+        private void HandleItemUse()
+        {
+            if (player.Inventory.Count == 0)
+            {
+                Console.WriteLine("\nYour inventory is empty.");
+                return;
+            }
+
+            Console.WriteLine($"\nInventory: {player.InventoryContents()}");
+            Console.WriteLine("Enter the name of the item to use, or type 'skip' to cancel:");
+            string itemChoice = Console.ReadLine().ToLower();
+
+            if (itemChoice == "skip")
+            {
+                return;
+            }
+
+            bool isItemFound = false;
+            foreach (string item in player.Inventory)
+            {
+                if (item.ToLower() == itemChoice)
+                {
+                    isItemFound = true;
+                    break;
+                }
+            }
+
+            if (isItemFound)
+            {
+                if (itemChoice == "health potion")
+                {
+                    int healAmount = new Random().Next(10, 21);
+                    player.Health += healAmount;
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"You used a Health Potion and regained {healAmount} health!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    player.Inventory.Remove("Health Potion");
+                }
+                else
+                {
+                    Console.WriteLine("You cannot use that item right now.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("You do not have that item in your inventory.");
+            }
+        }
         public void PlayTurn() 
         {
-            Console.WriteLine("\nChoose a direction: (forward or left or right)");
-            string direction = Console.ReadLine().ToLower();
+            string direction = "";
+
+            if (forcedDirectionCounter > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\nYou are forced to go {forcedDirection}!");
+                Console.ForegroundColor = ConsoleColor.White;
+                direction = forcedDirection;
+                forcedDirectionCounter--;
+                if (forcedDirectionCounter == 0)
+                {
+                    forcedDirection = ""; // Reset forced direction
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nChoose a direction: forward, left, right");
+                direction = Console.ReadLine().ToLower();
+            }
 
             Room nextroom;
 
@@ -113,7 +191,7 @@ namespace DungeonExplorer
                     return;
             }
 
-            nextroom.ProcessRoom(player, ref roomsPassed);
+            nextroom.ProcessRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection);
         }
 
     }
