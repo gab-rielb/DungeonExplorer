@@ -10,11 +10,26 @@ namespace DungeonExplorer
     {
         static void Main(string[] args)
         {
-            Game game = new Game();
-            game.Start();
-            Console.WriteLine("Waiting for your Implementation");
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+            try
+            {
+                // Create a new game object and start the game
+                Game game = new Game();
+                game.Start();
+            }
+            catch (Exception ex)
+            {
+                // Handle any unexpected errors that occur during the game
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            finally
+            {
+                // Ensure the console window stays open until the user presses a key
+                
+                Console.WriteLine("\n\nEnd of code. Press any key to exit...");
+                Console.ReadKey();
+            }
         }
     }
 }
