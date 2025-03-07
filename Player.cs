@@ -4,25 +4,17 @@ using System.Collections.Generic;
 namespace DungeonExplorer
 {
     /// <summary>
-    /// Player class intends to be able to create a player for the game with basic information.
-    /// 
-    /// Attributes:
-    /// (string) name
-    /// (int) health
-    /// (list<string>) inventory
-    /// 
-    /// Methods:
-    /// PickUpItem -> (currently no functionality)
-    /// InventoryContents -> Displays the contents of the player inventory
+    /// Represents the player character in the game.
     /// </summary>
     public class Player
     {
-        // Player attributes
-        private string _name;
-        private int _health;
-        private List<string> _inventory;
+        private string _name; // Player's defined name
+        private int _health; // Player's health points
+        private List<string> _inventory; // Player's inventory
 
-        // Player Accessor Functions
+        /// <summary>
+        /// Gets or sets the player's name.
+        /// </summary>
         public string Name {
             get
             {
@@ -30,10 +22,11 @@ namespace DungeonExplorer
             } 
             set
             {
+                // Validate the name (not null, empty, or too long)
                 if (string.IsNullOrWhiteSpace(value) || value.Length > 25)
                 {
                     Console.WriteLine("Erroneous input, default player name used instead.");
-                    _name = "default_player";
+                    _name = "default_player"; // Default name if invalid input
                 }
                 else 
                 {
@@ -41,6 +34,10 @@ namespace DungeonExplorer
                 }
             } 
         }
+
+        /// <summary>
+        /// Gets or sets the player's health points.
+        /// </summary>
         public int Health 
         {
             get
@@ -49,9 +46,10 @@ namespace DungeonExplorer
             }
             set
             {
+                // Ensure health is within the range 0-100
                 if (value < 1 || value > 100) 
                 {
-                    _health = 0;
+                    _health = 0; // Set health to 0 if out of range
                 }
                 else
                 {
@@ -59,6 +57,10 @@ namespace DungeonExplorer
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the player's inventory.
+        /// </summary>
         public List<string> Inventory
         {
             get 
@@ -70,8 +72,13 @@ namespace DungeonExplorer
                 _inventory = value;
             }
         }
-        
-        // Player Constructor
+
+        /// <summary>
+        /// Constructor for the player class. Initialises a new instance of the Player class.
+        /// </summary>
+        /// <param name="name">The player's name.</param>
+        /// <param name="health">The player's starting health.</param>
+        /// <param name="inventory">The player's starting inventory.</param>
         public Player(string name, int health, List<string> inventory) 
         {
             _name = name;
@@ -79,18 +86,27 @@ namespace DungeonExplorer
             _inventory = inventory;
         }
 
-        // Player Methods
+
+        /// <summary>
+        /// Adds an item to the player's inventory.
+        /// </summary>
+        /// <param name="item">The name of the item to add.</param>
         public void PickUpItem(string item)
         {
             _inventory.Add(item);
         }
+
+        /// <summary>
+        /// Returns a string representation of the player's inventory contents.
+        /// </summary>
+        /// <returns>A string listing the items int the inventory, or "Empty" if the inventory is empty.</returns>
         public string InventoryContents()
         {
             if (_inventory.Count == 0)
             {
                 return "Empty";
             }
-            return string.Join(", ", _inventory);
+            return string.Join(", ", _inventory); // Join the items in the inventory with a comma
         }
     }
 }

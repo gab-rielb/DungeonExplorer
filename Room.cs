@@ -5,21 +5,11 @@ using System.Runtime.InteropServices;
 namespace DungeonExplorer
 {
     /// <summary>
-    /// Room class will randomly generate a room with a variety of options.
-    /// 
-    /// Attributes:
-    /// (const)(string) Pass -> A way to generate a new room that is safe
-    /// (const)(string) SlightDamage -> A way to generate a new room that inflicts slight damage
-    /// (const)(string) HeavyDamage -> A way to generate a new room that inflicts heavy damage
-    /// (static)(Random) _random -> A way to generate a random number whenever needed
-    /// 
-    /// Methods:
-    /// GetRandomRoom -> Randomly generates and returns one of three room types
-    /// ProcessRoom -> Proceeds the user with(out) consequences depending on room type
+    /// Represents a room in the dungeon.
     /// </summary>
     public class Room
     {
-        // Room Attributes
+        // Room type constants. This defines the type of room the player encounters.
         public const string Pass = "Pass";
         public const string SlightDamage = "SlightDamage";
         public const string HeavyDamage = "HeavyDamage";
@@ -27,21 +17,29 @@ namespace DungeonExplorer
         public const string Unlucky = "Unlucky";
         public const string Mystery = "Mystery";
 
-        private static Random _random = new Random();
+        private static Random _random = new Random(); // Random number generator for room generation
 
-        // Room Accessors
+        /// <summary>
+        /// Gets the type of the room.
+        /// </summary>
         public string Type { get; }
 
-        // Room Constructor
+        /// <summary>
+        /// Constructor for the Room class. Initialises a new instance of the Room class with the specified type.
+        /// </summary>
+        /// <param name="type">The type of room.</param>
         public Room(string type)
         {
             Type = type;
         }
 
-        // Room Methods
+        /// <summary>
+        /// Generates a random room based on the room type constants.
+        /// </summary>
+        /// <returns>A new room object with a randomly selected type.</returns>
         public static Room GetRandomRoom()
         {
-            int randomnum = _random.Next(1, 7);
+            int randomnum = _random.Next(1, 7); // Generate a random number between 1 and 6
             switch (randomnum)
             {
                 case 1:
@@ -57,22 +55,30 @@ namespace DungeonExplorer
                 case 6:
                     return new Room(Mystery);
                 default:
-                    return new Room(Pass);
+                    return new Room(Pass); // Default to a safe room
             }
         }
+
+        /// <summary>
+        /// Processes the room based on the room type and updates the player's health and room count.
+        /// </summary>
+        /// <param name="player">The player object.</param>
+        /// <param name="roomsPassed">A reference to the number of rooms passed (can be modified by the room).</param>
+        /// <param name="forcedDirectionCounter">A reference to the forced direction counter (can be modified).</param>
+        /// <param name="forcedDirection">A reference to the forced direction (can be modified).</param>
         public void ProcessRoom(Player player, ref int roomsPassed, ref int forcedDirectionCounter, ref string forcedDirection)
         {
 
-            GenerateRoomDescription();
+            GenerateRoomDescription(); // Display generated room description
 
             switch (Type)
             {
                 case Pass:
-                    roomsPassed++; // Increment roomsPassed
+                    roomsPassed++; // Increment roomsPassed for a safe room
                     break;
 
                 case SlightDamage:
-                    int damage = _random.Next(5, 16);
+                    int damage = _random.Next(5, 16); // Generate random damage between 5 and 15
                     player.Health -= damage;
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"You took {damage} damage!");
@@ -81,7 +87,7 @@ namespace DungeonExplorer
                     break;
 
                 case HeavyDamage:
-                    damage = _random.Next(15, 26);
+                    damage = _random.Next(15, 26); // Generate random damage between 15 and 25
                     player.Health -= damage;
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"You took {damage} damage!");
@@ -90,17 +96,17 @@ namespace DungeonExplorer
                     break;
 
                 case Lucky:
-                    ProcessLuckyRoom(player, ref roomsPassed);
+                    ProcessLuckyRoom(player, ref roomsPassed); // Call method to handle lucky room events
                     roomsPassed++;
                     break;
 
                 case Unlucky:
-                    ProcessUnluckyRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection);
+                    ProcessUnluckyRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection); // Call method to handle unlucky room events
                     // roomsPassed incremented within ProcessUnluckyRoom
                     break;
 
                 case Mystery:
-                    ProcessMysteryRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection); //pass all the way through
+                    ProcessMysteryRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection); // Call method to handle mystery room events
                     //roomsPassed incremented within ProcessMysteryRoom
                     break;
 
@@ -112,9 +118,14 @@ namespace DungeonExplorer
             }
         }
 
+        /// <summary>
+        /// Processes the events that occur in a 'lucky' room. Including finding items and gaining health.
+        /// </summary>
+        /// <param name="player">The player object.</param>
+        /// <param name="roomsPassed">A reference to the number of rooms passed.</param>
         private void ProcessLuckyRoom(Player player, ref int roomsPassed)
         {
-            int luckyevent = _random.Next(1, 4);
+            int luckyevent = _random.Next(1, 4); // Choose a random lucky event
             switch (luckyevent)
             {
                 case 1:
@@ -125,7 +136,7 @@ namespace DungeonExplorer
                     string choice = Console.ReadLine().ToLower();
                     if (choice == "y")
                     {
-                        int healamount = _random.Next(10, 21);
+                        int healamount = _random.Next(10, 21); // Random heal amount between 10 and 20
                         player.Health += healamount;
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"You used a health potion and gained {healamount} health!");
@@ -136,7 +147,7 @@ namespace DungeonExplorer
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Health potion added to inventory.");
                         Console.ForegroundColor = ConsoleColor.White;
-                        player.PickUpItem("Health Potion");
+                        player.PickUpItem("Health Potion"); // Add health potion to inventory
                     }
                     break;
 
@@ -144,14 +155,14 @@ namespace DungeonExplorer
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine("\nYou found a kebab! You restore ALL your health.");
                     Console.ForegroundColor = ConsoleColor.White;
-                    player.Health = 100;
+                    player.Health = 100; // Restore full player health
                     break;
 
                 case 3:
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("You discover a hidden shortcut! You advance two rooms.");
                     Console.ForegroundColor = ConsoleColor.White;
-                    roomsPassed ++;
+                    roomsPassed ++; // Advance an extra room
                     break;
 
                 default:
@@ -162,18 +173,25 @@ namespace DungeonExplorer
             }
         }
 
+        /// <summary>
+        /// Processes the events that occur in an 'unlucky' room. Including taking damage, setbacks, and forced movement.
+        /// </summary>
+        /// <param name="player">The player object.</param>
+        /// <param name="roomsPassed">A reference to the number of rooms passed.</param>
+        /// <param name="forcedDirectionCounter">A reference to the forced direction counter.</param>
+        /// <param name="forcedDirection">A reference to the forced direction.</param>
         private void ProcessUnluckyRoom(Player player, ref int roomsPassed, ref int forcedDirectionCounter, ref string forcedDirection)
         {
-            int unluckyEvent = _random.Next(1, 4);
+            int unluckyEvent = _random.Next(1, 4); // Randomly choose an unlucky event
             switch (unluckyEvent)
             {
                 case 1:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Cursed boots bind on to your feet!");
 
-                    forcedDirectionCounter = 3;
+                    forcedDirectionCounter = 3; // Force movement for 3 turns
 
-                    int direction = _random.Next(1, 4);  //1 forward, 2 left, 3 right,
+                    int direction = _random.Next(1, 4);  // 1 forward, 2 left, 3 right,
                     if (direction == 1)
                     {
                         forcedDirection = "forward";
@@ -193,15 +211,15 @@ namespace DungeonExplorer
                     break;
 
                 case 2:
-                    int setback = _random.Next(1, 4);
-                    int falldamage = _random.Next(1, 6);
+                    int setback = _random.Next(1, 4); // Random setback between 1 and 3 rooms
+                    int falldamage = _random.Next(1, 6); // Random fall damage between 1 and 5
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"You fall through a trapdoor! You are set back {setback} room(s) and take {falldamage} fall damage.");
                     Console.ForegroundColor = ConsoleColor.White;
                     roomsPassed -= setback;
                     if (roomsPassed - setback < -1)
                     {
-                        roomsPassed = 0; //prevent negative rooms
+                        roomsPassed = 0; // Prevent negative rooms
                     }
                     player.Health -= falldamage;
 
@@ -223,23 +241,30 @@ namespace DungeonExplorer
             }
         }
 
+        /// <summary>
+        /// Processes the events that occur in a 'mystery' room. Including random events, potions, and forced movement.
+        /// </summary>
+        /// <param name="player">The player object.</param>
+        /// <param name="roomsPassed">A reference to the number of rooms passed.</param>
+        /// <param name="forcedDirectionCounter">A reference to the forced direction counter.</param>
+        /// <param name="forcedDirection">A reference to the forced direction.</param>
         private void ProcessMysteryRoom(Player player, ref int roomsPassed, ref int forcedDirectionCounter, ref string forcedDirection)
         {
-            int mysteryEvent = _random.Next(1, 4);
+            int mysteryEvent = _random.Next(1, 4); // Randomly choose a mystery event
             switch (mysteryEvent)
             {
                 case 1:
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.WriteLine("You found a mysterious loom! It advances you forward.");
                     Console.ForegroundColor = ConsoleColor.White;
-                    roomsPassed += _random.Next(1, 4);
+                    roomsPassed += _random.Next(1, 4); // Advance 1-3 rooms
                     break;
 
                 case 2:
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.WriteLine("You stumble across a mysterious horn! It summons a mystical monster!");
                     Console.ForegroundColor = ConsoleColor.White;
-                    int monsterDamage = _random.Next(10, 31); //  damage
+                    int monsterDamage = _random.Next(10, 31); // Random monster damage between 10 and 30
                     player.Health -= monsterDamage;
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"The monster deals {monsterDamage} damage!");
@@ -260,7 +285,7 @@ namespace DungeonExplorer
                         Console.ForegroundColor= ConsoleColor.White;
                         if (player.Health + heal > 100)
                         {
-                            player.Health = 100;
+                            player.Health = 100; // Cap health at 100
                         }
                         else
                         {
@@ -270,7 +295,7 @@ namespace DungeonExplorer
                     }
                     else if (potionEffect == 2)
                     {
-                        int damage = _random.Next(5, 16);
+                        int damage = _random.Next(5, 16); // Random damage between 5 and 15
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"The potion damages you for {damage} health");
                         Console.ForegroundColor = ConsoleColor.White;
@@ -279,8 +304,8 @@ namespace DungeonExplorer
                     }
                     else
                     {
-                        forcedDirectionCounter = _random.Next(1, 4);
-                        int direction = _random.Next(1, 4); //1 forward, 2 left, 3 right
+                        forcedDirectionCounter = _random.Next(1, 4); // Random forced direction between 1 and 3 turns
+                        int direction = _random.Next(1, 4); // 1 forward, 2 left, 3 right
                         if (direction == 1)
                         {
                             forcedDirection = "forward";
@@ -309,6 +334,9 @@ namespace DungeonExplorer
             }
         }
 
+        /// <summary>
+        /// Generates a room description based on the room type.
+        /// </summary>
         public void GenerateRoomDescription()
         {
             List<string> descriptions = new List<string>();
@@ -356,9 +384,9 @@ namespace DungeonExplorer
                     break;
             }
 
-            int i = _random.Next(descriptions.Count);
+            int i = _random.Next(descriptions.Count); // Randomly choose a description
             Console.WriteLine("\n");
-            Console.WriteLine(descriptions[i]);
+            Console.WriteLine(descriptions[i]); // Display the chosen description
             Console.ForegroundColor = ConsoleColor.White;
         }
         

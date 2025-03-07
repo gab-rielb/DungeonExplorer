@@ -7,45 +7,48 @@ namespace DungeonExplorer
 {
     /// <summary>
     /// Game class contains the main sequence of the game.
-    /// 
-    /// Attributes:
-    /// (Player) player -> A new object of class Player (creates a player for the game)
-    /// (int) roomsPassed -> A way to keep track of how many rooms have been passed
-    /// 
-    /// Methods:
-    /// Start ->  Starts the main logic of the game, completes when game is over
-    /// PlayTurn -> Logic for player choice for each iteration while game is not over
     /// </summary>
     internal class Game
     {
-        private Player player;
-        private int roomsPassed;
-        private int forcedDirectionCounter;
-        private string forcedDirection;
-        private int roomsToEscape = 10;
+        private Player player; // The player object
+        private int roomsPassed; // Number of rooms the player successfully passed
+        private int forcedDirectionCounter; // Counter for forced movement
+        private string forcedDirection; //Direction for forced movement
+        private int roomsToEscape = 10; // Number of rooms needed to escape
 
+        /// <summary>
+        /// Constructor for the Game class. Initialises a new game object.
+        /// </summary>
         public Game()
         {
+            // Initialise a new player with default values
             player = new Player("", 0, new List<string>());
             roomsPassed = 0;
             forcedDirectionCounter = 0;
             forcedDirection = "";
-            roomsToEscape = 10;
+            roomsToEscape = 10; // Default to normal difficulty
         }
 
+        /// <summary>
+        /// Starts the main game sequence.
+        /// </summary>
         public void Start()
         {
-            InitialisePlayer();
-            SelectDifficulty();
-            DisplayGameInstructions();
-            GameLoop();
-            DisplayGameResult();
+            InitialisePlayer(); // Set up the player
+            SelectDifficulty(); // Let the player choose the difficulty
+            DisplayGameInstructions(); // Show the game instructions
+            GameLoop(); // Start the main game loop
+            DisplayGameResult(); // Display the outcome of the game
         }
 
+        /// <summary>
+        /// Initialises the player by asking for their name and default values.
+        /// </summary>
         private void InitialisePlayer()
         {
             Console.WriteLine("Please enter player's name: ");
             string playerName = Console.ReadLine();
+            // Set the player's name, health and inventory
             player.Name = playerName;
             player.Health = 100;
             player.Inventory = new List<string>();
@@ -57,6 +60,9 @@ namespace DungeonExplorer
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Allows the player to select the game difficulty, which determines the number of rooms to escape.
+        /// </summary>
         private void SelectDifficulty()
         {
             Console.WriteLine("\nSelect Difficulty:");
@@ -69,6 +75,7 @@ namespace DungeonExplorer
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Enter your choice (1-3): ");
 
+            // Sets roomsToEscape based on player's choice
             string choice = Console.ReadLine();
             switch (choice)
             {
@@ -88,6 +95,9 @@ namespace DungeonExplorer
             }
         }
 
+        /// <summary>
+        /// Display's the game's objectives and instrucions.
+        /// </summary>
         private void DisplayGameInstructions()
         {
             Console.WriteLine("\nObjective: Exit the maze." +
@@ -95,6 +105,9 @@ namespace DungeonExplorer
                               $"\nYou must pass {roomsToEscape} rooms to escape.");
         }
 
+        /// <summary>
+        /// Displays options to the player to check their status or use items.
+        /// </summary>
         private void DisplayTurnOptions()
         {
             Console.WriteLine("\n\n---------------------------------\n");
@@ -105,6 +118,9 @@ namespace DungeonExplorer
                                "\nPress enter to skip.");
         }
 
+        /// <summary>
+        /// Processes the player's input for turn choices.
+        /// </summary>
         private void ProcessTurnOptions()
         {
             string checkstats = Console.ReadLine();
@@ -117,12 +133,13 @@ namespace DungeonExplorer
                     Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
                     break;
                 case "item":
-                    HandleItemUse();
+                    HandleItemUse(); // Call method to handle item usage
                     break;
                 case "inventory":
                     Console.WriteLine($"\n{player.Name}'s inventory: {player.InventoryContents()}.");
                     break;
                 case "":
+                    // Player chose to skip
                     break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -132,16 +149,23 @@ namespace DungeonExplorer
                     break;
             }
         }
+
+        /// <summary>
+        /// The main game loop. Continues until the player's health reaches 0 or they escape the maze.
+        /// </summary>
         private void GameLoop()
         {
             while (player.Health > 0 && roomsPassed < roomsToEscape)
             {
-                PlayTurn();
-                DisplayTurnOptions();
-                ProcessTurnOptions();
+                PlayTurn(); // Process a single turn
+                DisplayTurnOptions(); // Options to view stats or use items
+                ProcessTurnOptions(); // Process the player's choice
             }
         }
 
+        /// <summary>
+        /// Displaus the outcome of the game (win or lose).
+        /// </summary>
         private void DisplayGameResult()
         {
             if (player.Health <= 0)
@@ -158,7 +182,9 @@ namespace DungeonExplorer
             }
         }
 
-
+        /// <summary>
+        /// Handles the use of items in the player's inventory.
+        /// </summary>
         private void HandleItemUse()
         {
             if (player.Inventory.Count == 0)
@@ -173,10 +199,11 @@ namespace DungeonExplorer
 
             if (itemChoice == "skip")
             {
-                return;
+                return; // Cancel item usage
             }
 
             bool isItemFound = false;
+            // Iterate through the player's inventory to find the item
             foreach (string item in player.Inventory)
             {
                 if (item.ToLower() == itemChoice)
@@ -188,14 +215,15 @@ namespace DungeonExplorer
 
             if (isItemFound)
             {
+                // Handle specific item effects. Only health potion exists.
                 if (itemChoice == "health potion")
                 {
-                    int healAmount = new Random().Next(10, 21);
+                    int healAmount = new Random().Next(10, 21); // Random heal amount between 10-20
                     player.Health += healAmount;
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"You used a Health Potion and regained {healAmount} health!");
                     Console.ForegroundColor = ConsoleColor.White;
-                    player.Inventory.Remove("Health Potion");
+                    player.Inventory.Remove("Health Potion"); // Remove the used potion
                 }
                 else
                 {
@@ -207,10 +235,15 @@ namespace DungeonExplorer
                 Console.WriteLine("You do not have that item in your inventory.");
             }
         }
+
+        /// <summary>
+        /// Handles a single turn of the game, including player movement and room processing.
+        /// </summary>
         public void PlayTurn() 
         {
             string direction = "";
 
+            // Checked for forced movement
             if (forcedDirectionCounter > 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -220,30 +253,33 @@ namespace DungeonExplorer
                 forcedDirectionCounter--;
                 if (forcedDirectionCounter == 0)
                 {
-                    forcedDirection = ""; // Reset forced direction
+                    forcedDirection = ""; // Reset forced direction after it's used
                 }
             }
             else
             {
+                // Get player's direction choice
                 Console.WriteLine("\nChoose a direction: forward, left, right");
                 direction = Console.ReadLine().ToLower();
             }
 
             Room nextroom;
 
+            // Determine the next room based on the player's direction choice
             switch (direction)
             {
                 case "forward":
                 case "left":
                 case "right":
-                    nextroom = Room.GetRandomRoom();
+                    nextroom = Room.GetRandomRoom(); // Get a random room
                     break;
 
                 default:
                     Console.WriteLine("Invalid direction. You stumble around confused.");
-                    return;
+                    return; // Invalid direction, end the turn
             }
 
+            // Process the effects of the room. Passes 'ref' paramaters to modify the game state
             nextroom.ProcessRoom(player, ref roomsPassed, ref forcedDirectionCounter, ref forcedDirection);
         }
 
