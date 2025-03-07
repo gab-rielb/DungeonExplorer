@@ -57,7 +57,7 @@ namespace DungeonExplorer
             Console.WriteLine($"\nPlayer '{player.Name}' with {player.Health} health created.");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nPress any key to begin a game.");
-            Console.ReadKey();
+            Console.ReadKey(true);
         }
 
         /// <summary>
@@ -112,7 +112,6 @@ namespace DungeonExplorer
         /// </summary>
         private void DisplayTurnOptions()
         {
-            Console.WriteLine("\n\n---------------------------------\n");
             Console.WriteLine("\nType 'health' to view health" +
                                "\nType 'progress' to view progress" +
                                "\nType 'item' to use an item" +
@@ -125,30 +124,40 @@ namespace DungeonExplorer
         /// </summary>
         private void ProcessTurnOptions()
         {
-            string checkstats = Console.ReadLine();
-            switch (checkstats)
+            while (true)
             {
-                case "health":
-                    Console.WriteLine($"\n{player.Name}'s health: {player.Health}.");
-                    break;
-                case "progress":
-                    Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
-                    break;
-                case "item":
-                    HandleItemUse(); // Call method to handle item usage
-                    break;
-                case "inventory":
-                    Console.WriteLine($"\n{player.Name}'s inventory: {player.InventoryContents()}.");
-                    break;
-                case "":
-                    // Player chose to skip
-                    break;
-                default:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nInvalid option. Press any key to continue to game.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.ReadKey();
-                    break;
+                DisplayTurnOptions(); // Options to view stats or use items
+                string checkstats = Console.ReadLine();
+                switch (checkstats)
+                {
+                    case "health":
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"\n{player.Name}'s health: {player.Health}.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        break;
+                    case "progress":
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"\n{player.Name} has passed {roomsPassed} rooms.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        break;
+                    case "item":
+                        HandleItemUse(); // Call method to handle item usage
+                        break;
+                    case "inventory":
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"\n{player.Name}'s inventory: {player.InventoryContents()}.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        break;
+                    case "":
+                        // Player chose to skip
+                        return;
+                    default:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\nInvalid option. Press any key to continue to game.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ReadKey();
+                        break;
+                }
             }
         }
 
@@ -160,8 +169,8 @@ namespace DungeonExplorer
             while (player.Health > 0 && roomsPassed < roomsToEscape)
             {
                 PlayTurn(); // Process a single turn
-                DisplayTurnOptions(); // Options to view stats or use items
                 ProcessTurnOptions(); // Process the player's choice
+                Console.WriteLine("\n\n---------------------------------\n"); // Separator between turns
             }
         }
 
@@ -191,11 +200,14 @@ namespace DungeonExplorer
         {
             if (player.Inventory.Count == 0)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\nYour inventory is empty.");
+                Console.ForegroundColor = ConsoleColor.White;
                 return;
             }
-
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"\nInventory: {player.InventoryContents()}");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Enter the name of the item to use, or type 'skip' to cancel:");
             string itemChoice = Console.ReadLine().ToLower();
 
@@ -262,7 +274,7 @@ namespace DungeonExplorer
             {
                 // Get player's direction choice
                 Console.WriteLine("\nChoose a direction: forward, left, right");
-                direction = Console.ReadLine().ToLower();
+                direction = Console.ReadLine().ToLower().Trim();
             }
 
             Room nextroom;
