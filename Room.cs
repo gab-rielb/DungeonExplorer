@@ -254,10 +254,11 @@ namespace DungeonExplorer
             switch (mysteryEvent)
             {
                 case 1:
+                    int loomLength = _random.Next(1, 4);
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    Console.WriteLine("You found a mysterious loom! It advances you forward.");
+                    Console.WriteLine($"You found a mysterious loom! It leads you safely through {loomLength} rooms.");
                     Console.ForegroundColor = ConsoleColor.White;
-                    roomsPassed += _random.Next(1, 4); // Advance 1-3 rooms
+                    roomsPassed += loomLength; // Advance 1-3 rooms
                     break;
 
                 case 2:

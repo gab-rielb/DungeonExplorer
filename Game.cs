@@ -100,9 +100,11 @@ namespace DungeonExplorer
         /// </summary>
         private void DisplayGameInstructions()
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\nObjective: Exit the maze." +
                               "\nEach room will have different effects/events." +
                               $"\nYou must pass {roomsToEscape} rooms to escape.");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         /// <summary>
