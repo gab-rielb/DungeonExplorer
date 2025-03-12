@@ -175,7 +175,7 @@ namespace DungeonExplorer
         }
 
         /// <summary>
-        /// Displaus the outcome of the game (win or lose).
+        /// Displays the outcome of the game (win or lose).
         /// </summary>
         private void DisplayGameResult()
         {

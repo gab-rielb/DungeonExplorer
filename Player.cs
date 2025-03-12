@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DungeonExplorer
 {
@@ -25,7 +26,7 @@ namespace DungeonExplorer
                 // Validate the name (not null, empty, or too long)
                 if (string.IsNullOrWhiteSpace(value) || value.Length > 25)
                 {
-                    Console.WriteLine("Erroneous input, default player name used instead.");
+                    Console.WriteLine("\nErroneous input, default player name used instead.");
                     _name = "default_player"; // Default name if invalid input
                 }
                 else 
@@ -49,11 +50,12 @@ namespace DungeonExplorer
                 // Ensure health is within the range 0-100
                 if (value < 1 || value > 100) 
                 {
-                    _health = 0; // Set health to 0 if out of range
+                    throw new ArgumentOutOfRangeException("\nHealth must be between 1 and 100.");
                 }
                 else
                 {
                     _health = value;
+                    Debug.Assert(_health >= 0 && _health <= 100, "Player health is out of range.");
                 }
             }
         }
@@ -93,7 +95,13 @@ namespace DungeonExplorer
         /// <param name="item">The name of the item to add.</param>
         public void PickUpItem(string item)
         {
+            if (string.IsNullOrWhiteSpace(item))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new ArgumentException("\nItem cannot be null or empty.");
+            }
             _inventory.Add(item);
+            Debug.Assert(_inventory.Contains(item), $"Item '{item}' was not added to the inventory.");
         }
 
         /// <summary>

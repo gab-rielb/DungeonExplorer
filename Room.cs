@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DungeonExplorer
@@ -30,7 +31,13 @@ namespace DungeonExplorer
         /// <param name="type">The type of room.</param>
         public Room(string type)
         {
+            if (string.IsNullOrEmpty(type))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new ArgumentException("\nRoom type cannot be null or empty");
+            }
             Type = type;
+            Debug.Assert(!string.IsNullOrWhiteSpace(Type), "Room type was not initialized.");
         }
 
         /// <summary>
