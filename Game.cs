@@ -175,7 +175,7 @@ namespace DungeonExplorer
         }
 
         /// <summary>
-        /// Displaus the outcome of the game (win or lose).
+        /// Displays the outcome of the game (win or lose).
         /// </summary>
         private void DisplayGameResult()
         {
@@ -253,7 +253,7 @@ namespace DungeonExplorer
         /// <summary>
         /// Handles a single turn of the game, including player movement and room processing.
         /// </summary>
-        public void PlayTurn() 
+        public void PlayTurn()
         {
             string direction = "";
 

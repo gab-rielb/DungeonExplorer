@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DungeonExplorer
@@ -30,7 +31,13 @@ namespace DungeonExplorer
         /// <param name="type">The type of room.</param>
         public Room(string type)
         {
+            if (string.IsNullOrEmpty(type))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new ArgumentException("\nRoom type cannot be null or empty");
+            }
             Type = type;
+            Debug.Assert(!string.IsNullOrWhiteSpace(Type), "Room type was not initialized.");
         }
 
         /// <summary>
@@ -162,7 +169,7 @@ namespace DungeonExplorer
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("You discover a hidden shortcut! You advance two rooms.");
                     Console.ForegroundColor = ConsoleColor.White;
-                    roomsPassed ++; // Advance an extra room
+                    roomsPassed++; // Advance an extra room
                     break;
 
                 default:
@@ -283,7 +290,7 @@ namespace DungeonExplorer
                         int heal = _random.Next(5, 16);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"The potion heals you for {heal} health");
-                        Console.ForegroundColor= ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.White;
                         if (player.Health + heal > 100)
                         {
                             player.Health = 100; // Cap health at 100
@@ -390,6 +397,6 @@ namespace DungeonExplorer
             Console.WriteLine(descriptions[i]); // Display the chosen description
             Console.ForegroundColor = ConsoleColor.White;
         }
-        
+
     }
 }
