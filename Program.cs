@@ -1,40 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using DungeonExplorer;
 
-namespace DungeonExplorer
+internal class Program
 {
-    /// <summary>
-    /// The main entry point of the Dungeon Explorer game.
-    /// </summary>
-    internal class Program
+    internal static void Main(string[] args)
     {
-        /// <summary>
-        /// The main method that initialises and runs the game.
-        /// </summary>
-        /// <param name="args">Command Line arguments (not used)</param>
-        static void Main(string[] args)
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("Welcome to Dungeon Explorer!");
+        Console.WriteLine("--------------------------");
+        Console.WriteLine("Please choose an option:");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("  1. Start Game");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine("  2. Run Tests");
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("--------------------------");
+        Console.ForegroundColor = ConsoleColor.White;
+
+        string choice = "";
+        bool validInput = false;
+
+        while (!validInput)
         {
+            Console.Write("Enter your choice (1 or 2): ");
+            Console.ForegroundColor = ConsoleColor.White;
+            choice = Console.ReadLine()?.Trim();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.Clear();
+                    RunGame();
+                    validInput = true;
+                    break;
+                case "2":
+                    Console.Clear();
+                    Console.WriteLine("Running in Test Mode...");
+                    DungeonTester tester = new DungeonTester();
+                    tester.RunAllTests();
+                    validInput = true;
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+            }
+        }
+
+        Console.WriteLine("\n\nProgramme finished. Press any key to exit...");
+        Console.ReadKey(true);
+    }
+
+    internal static void RunGame()
+    {
+        try
+        {
+            Game game = new Game();
+            game.Start();
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\nA critical error occurred during the game: {ex.Message}");
+            Console.WriteLine("--- Stack Trace ---");
+            Console.WriteLine(ex.StackTrace);
+            Console.ForegroundColor = ConsoleColor.White;
+
             try
             {
-                // Create a new game object and start the game
-                Game game = new Game();
-                game.Start();
+                File.AppendAllText("critical_error_log.txt", $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} | GAME CRITICAL ERROR: {ex.ToString()}\n\n");
+                Console.WriteLine("Error details logged to critical_error_log.txt");
             }
-            catch (Exception ex)
+            catch (Exception logEx)
             {
-                // Handle any unexpected errors that occur during the game
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($"Failed to write to error log: {logEx.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
-            }
-            finally
-            {
-                // Ensure the console window stays open until the user presses a key
-                Console.WriteLine("\n\nEnd of code. Press any key to exit...");
-                Console.ReadKey();
             }
         }
     }
