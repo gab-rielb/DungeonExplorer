@@ -39,7 +39,7 @@
         protected Monster(string name, int initialHealth, int damage, int experienceValue)
             : base(name, initialHealth, initialHealth, damage)
         {
-            ExperienceValue = experienceValue;
+            ExperienceValue = experienceValue >= 0 ? experienceValue : 0;
             Loot = new List<Item>();
         }
 
@@ -58,7 +58,7 @@
             Console.ForegroundColor = ConsoleColor.White;
 
             int calculatedDamage = _random.Next(1, Damage + 1);
-            if (calculatedDamage < 0) calculatedDamage = 0;
+            calculatedDamage = Math.Max(0, calculatedDamage);
 
             target.TakeDamage(calculatedDamage);
         }
@@ -92,9 +92,7 @@
 
             CurrentPosition = currentRoom.Coordinates;
 
-            bool isInSideBranch = CurrentPosition.X != 0;
-
-            if (isInSideBranch && CanFlee && (double)_health / _maxHealth < 0.30 && _random.Next(100) < 50)
+            if (CanFlee && (double)_health / _maxHealth < 0.30 && _random.Next(100) < 50)
             {
                 AttemptFlee(currentRoom, gameMap, player);
             }
@@ -112,21 +110,25 @@
         /// <param name="player">The player<see cref="Player"/></param>
         protected virtual void AttemptFlee(Room currentRoom, GameMap gameMap, Player player)
         {
-            int xDirectionBack = -Math.Sign(CurrentPosition.X);
-            if (xDirectionBack == 0)
-            {
-                Attack(player);
-                return;
-            }
+            string directionToFlee = null;
+            Point fleeToCoord = CurrentPosition;
 
-            string directionBack = (xDirectionBack == 1) ? Direction.Right : Direction.Left;
-            Point fleeToCoord = new Point(CurrentPosition.X + xDirectionBack, CurrentPosition.Y);
-            Room fleeToRoom = gameMap.GetRoom(fleeToCoord);
+            if (CurrentPosition.X > 0) directionToFlee = Direction.Left;
+            else if (CurrentPosition.X < 0) directionToFlee = Direction.Right;
+            Room fleeToRoom = null;
+            if (!string.IsNullOrEmpty(directionToFlee) && currentRoom.Exits.TryGetValue(directionToFlee, out fleeToRoom))
+            {
+                fleeToCoord = fleeToRoom.Coordinates;
+            }
+            else
+            {
+                fleeToRoom = null;
+            }
 
             if (fleeToRoom != null)
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine($"{Name} is badly wounded and attempts to flee {directionBack.ToLower()}!");
+                Console.WriteLine($"{Name} is badly wounded and attempts to flee {directionToFlee.ToLower()}!");
                 Console.ForegroundColor = ConsoleColor.White;
 
                 bool removed = currentRoom.MonstersInRoom.Remove(this);
@@ -144,7 +146,7 @@
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Error: Failed to remove {Name} from room {currentRoom.Coordinates} during flee attempt.");
+                    Console.WriteLine($"Error: Failed to remove {Name} from room {currentRoom.Coordinates} during flee attempt. It attacks instead!");
                     Console.ForegroundColor = ConsoleColor.White;
                     Attack(player);
                 }
@@ -152,7 +154,7 @@
             else
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine($"{Name} tries to flee {directionBack.ToLower()} but finds the way blocked!");
+                Console.WriteLine($"{Name} tries to flee but finds the way blocked! It fights on!");
                 Console.ForegroundColor = ConsoleColor.White;
                 Attack(player);
             }

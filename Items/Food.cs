@@ -20,11 +20,9 @@
         /// <param name="healAmount">The healAmount<see cref="int"/></param>
         public Food(string name, string description, int healAmount) : base(name, description)
         {
-
             if (healAmount <= 0) throw new ArgumentOutOfRangeException(nameof(healAmount), "Heal amount must be positive.");
 
             HealAmount = healAmount;
-
             IsUsable = true;
         }
 
@@ -34,45 +32,23 @@
         /// <param name="player">The player<see cref="Player"/></param>
         public void Use(Player player)
         {
-
             if (player.Health < player.MaxHealth)
-
             {
-
                 int actualHeal = player.Heal(HealAmount);
 
                 if (actualHeal > 0)
-
                 {
-
                     Console.ForegroundColor = ConsoleColor.Green;
-
-                    Console.WriteLine($"{player.Name} used {Name} and restored {actualHeal} health.");
-
+                    Console.WriteLine($"{player.Name} consumed {Name} and restored {actualHeal} health. Current health: {player.Health}/{player.MaxHealth}.");
                     Console.ForegroundColor = ConsoleColor.White;
-
                     player.Inventory.RemoveItem(this);
-
                 }
-
-                else
-
-                {
-
-                }
-
             }
-
             else
-
             {
-
                 Console.ForegroundColor = ConsoleColor.Yellow;
-
                 Console.WriteLine($"{player.Name} cannot use {Name}. Health is already full.");
-
                 Console.ForegroundColor = ConsoleColor.White;
-
             }
         }
 
@@ -82,9 +58,7 @@
         /// <returns>The <see cref="string"/></returns>
         public override string ToString()
         {
-
-            return $"{Name}: {Description} (Heal Amount: {HealAmount})";
+            return $"{Name}: {Description} (Heals: {HealAmount})";
         }
     }
-
 }

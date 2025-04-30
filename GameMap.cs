@@ -447,87 +447,51 @@
         /// <param name="room">The room<see cref="Room"/></param>
         private void PopulateRoomContent(Room room)
         {
-
             if (room == null || room.IsExitRoom) return;
 
             int generation = room.GenerationLevel;
 
             switch (room.GeneratedType)
-
             {
-
                 case RoomType.Start:
-
                     if (_random.Next(100) < 85)
-
                         room.AddItem(new Potion("Small Healing Potion", "Restores 20 health.", 20));
-
                     break;
 
                 case RoomType.Safe:
-
                     bool isMainPath = room.Coordinates.X == 0;
-
                     if (isMainPath && generation > 0)
-
                     {
-
                         if (_random.Next(100) < 30 + generation * 2)
-
                         {
-
                             room.AddItem(GenerateRandomHealingItem());
-
                         }
-
                         if (_random.Next(100) < 20 + generation)
-
                         {
-
                             room.AddItem(new MiscItem("Energy Crystal", "Humming with latent experience. (Grants XP on entry)"));
-
                         }
-
                     }
-
                     else
-
                     {
-
                         if (_random.Next(100) < 40)
-
                         {
-
                             room.AddItem(GenerateRandomHealingItem());
-
                         }
-
                     }
-
                     break;
 
                 case RoomType.Puzzle:
-
                     if (_random.Next(100) < 15)
-
                         room.AddItem(new Food("Trail Rations", "Simple sustenance.", 10));
-
                     break;
 
                 case RoomType.Monster:
-
                     Monster monster = GenerateRawMonster(generation);
-
                     double healthMultiplier = 1.0 + (_difficultyModifier * 0.10);
-
                     int baseHealth = monster.MaxHealth;
-
                     int boostedHealth = (int)Math.Ceiling(baseHealth * healthMultiplier);
-
                     monster.ApplyHealthBoost(boostedHealth);
-
                     room.AddMonster(monster);
-
                     break;
 
             }
@@ -539,26 +503,19 @@
         /// <returns>The <see cref="Item"/></returns>
         public static Item GenerateRandomHealingItem()
         {
-
             int roll = _random.Next(100);
 
             if (roll < 50)
-
-                return new Food("Mouldy Bread", "Restores 10 health.", 10);
-
-            if (roll < 85)
-
+                return new Food("Stale Biscuit", "Dry and crumbly, but edible. Restores 10 health.", 10);
+            else if (roll < 85)
                 return new Potion("Healing Potion", "Restores 30 health.", 30);
-
             else
-
-                 if (_random.Next(2) == 0)
-
-                return new Food("Hearty Stew", "Restores 60 health.", 60);
-
-            else
-
-                return new Potion("Greater Healing Potion", "Restores 75 health.", 75);
+            {
+                if (_random.Next(2) == 0)
+                    return new Food("Hearty Stew", "Restores 60 health.", 60);
+                else
+                    return new Potion("Greater Healing Potion", "Restores 75 health.", 75);
+            }
         }
 
         /// <summary>
@@ -568,29 +525,19 @@
         /// <returns>The <see cref="Monster"/></returns>
         private Monster GenerateRawMonster(int generation)
         {
-
             int tier = Math.Max(0, generation / 5);
 
             int roll = _random.Next(100);
 
             if (tier <= 1)
-
             {
-
                 if (roll < 70) return new Goblin();
-
                 else return new Ogre();
-
             }
-
             else
-
             {
-
                 if (roll < 40) return new Goblin();
-
                 else return new Ogre();
-
             }
         }
     }

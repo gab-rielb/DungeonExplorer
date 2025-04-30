@@ -50,6 +50,11 @@
         private int _difficultyChoice = 2;
 
         /// <summary>
+        /// Defines the _playerAttackedLastTurn
+        /// </summary>
+        private bool _playerAttackedLastTurn = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class.
         /// </summary>
         public Game()
@@ -115,7 +120,7 @@
             Console.WriteLine(@"
 ***************************************
 * *
-* Welcome to DUNGEON EXPLORER!        *
+* Welcome to DUNGEON EXPLORER!      *
 * *
 ***************************************
 ");
@@ -163,9 +168,9 @@
             _difficultyChoice = 2;
 
             Console.WriteLine("\nSelect Difficulty:");
-            Console.ForegroundColor = ConsoleColor.Green; Console.WriteLine("1. Easy (Fewer Rooms, Weaker Foes)");
+            Console.ForegroundColor = ConsoleColor.Green; Console.WriteLine("1. Easy   (Fewer Rooms, Weaker Foes)");
             Console.ForegroundColor = ConsoleColor.Yellow; Console.WriteLine("2. Normal (Standard Rooms & Foes)");
-            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("3. Hard (More Rooms, Tougher Foes)");
+            Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("3. Hard   (More Rooms, Tougher Foes)");
             Console.ForegroundColor = ConsoleColor.White;
 
             while (true)
@@ -201,18 +206,18 @@
             Console.WriteLine("\nObjective: Navigate the dungeon, overcome challenges, and defeat the final Dragon!");
             Console.WriteLine("\nAvailable Commands:");
             Console.WriteLine("  Movement: 'forward'/'f', 'back'/'b', 'left'/'l', 'right'/'r'");
-            Console.WriteLine("  Actions:  'look'                             - Describe the current room.");
+            Console.WriteLine("  Actions:  'look'                       - Describe the current room.");
             Console.WriteLine("            'pickup [item]'/'take [item]' - Pick up an item from the room.");
-            Console.WriteLine("            'use [consumable]'             - Use a Potion or Food from inventory.");
-            Console.WriteLine("            'equip [weapon]'/'eq [w]'      - Equip a weapon by name from inventory.");
-            Console.WriteLine("            'equip strongest'/'eq s'       - Equip highest damage weapon from inventory.");
-            Console.WriteLine("            'equip fists'/'eq none'        - Unequip current weapon.");
-            Console.WriteLine("            'attack'/'a'                   - Attack the monster in the room.");
-            Console.WriteLine("            'solve'                        - Attempt to solve a puzzle in the room.");
-            Console.WriteLine("  Status:   'inventory'/'inv'/'i'          - View your inventory.");
-            Console.WriteLine("            'status'/'stats'/'st'          - View player stats & equipment.");
-            Console.WriteLine("  Game:     'help'                           - Show this list of commands.");
-            Console.WriteLine("            'quit'                           - Exit the game.");
+            Console.WriteLine("            'use [consumable]'           - Use a Potion or Food from inventory.");
+            Console.WriteLine("            'equip [weapon]'/'eq [w]'    - Equip a weapon by name from inventory.");
+            Console.WriteLine("            'equip strongest'/'eq s'     - Equip highest damage weapon from inventory.");
+            Console.WriteLine("            'equip fists'/'eq none'      - Unequip current weapon.");
+            Console.WriteLine("            'attack'/'a'                 - Attack the monster in the room (Monster will retaliate).");
+            Console.WriteLine("            'solve'                      - Attempt to solve a puzzle in the room.");
+            Console.WriteLine("  Status:   'inventory'/'inv'/'i'      - View your inventory.");
+            Console.WriteLine("            'status'/'stats'/'st'        - View player stats & equipment.");
+            Console.WriteLine("  Game:     'help'                       - Show this list of commands.");
+            Console.WriteLine("            'quit'                       - Exit the game.");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("\nPress any key to begin...");
             Console.ReadKey(true);
@@ -240,17 +245,31 @@
                 if (aliveMonstersInRoom.Any())
                 {
                     Monster monster = aliveMonstersInRoom[0];
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine($"\n--- {monster.Name}'s Turn ---");
-                    Console.ForegroundColor = ConsoleColor.White;
 
-                    monster.PerformAction(_player, _currentRoom, _gameMap);
+                    if (_playerAttackedLastTurn)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine($"\n--- {monster.Name}'s Turn (Retaliating) ---");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        monster.PerformAction(_player, _currentRoom, _gameMap);
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine($"\n--- {monster.Name}'s Turn (Waiting) ---");
+                        Console.WriteLine($"{monster.Name} watches you warily, waiting for you to act...");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    _playerAttackedLastTurn = false;
 
                     if (!_player.IsAlive) { _gameOver = true; break; }
 
                     aliveMonstersInRoom = _currentRoom.MonstersInRoom.Where(m => m.IsAlive).ToList();
                 }
-
+                else
+                {
+                    _playerAttackedLastTurn = false;
+                }
                 if (_currentRoom.IsExitRoom && !aliveMonstersInRoom.Any())
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -285,6 +304,8 @@
             string argument = parts.Length > 1 ? parts[1] : null;
             string commandAction = commandWord;
 
+            bool currentPlayerActionIsAttack = false;
+
             if (_currentRoom.IsPuzzleActive)
             {
                 bool isAllowedPuzzleCommand = commandWord == "solve" || commandWord == "look" ||
@@ -317,11 +338,11 @@
                     case "pickup":
                     case "get": resolvedAction = "take"; break;
                     case "a": resolvedAction = "attack"; break;
+                    case "eq": resolvedAction = "equip"; break;
                     case "inv":
                     case "i": resolvedAction = "inventory"; break;
                     case "stats":
                     case "st": resolvedAction = "status"; break;
-                    case "eq": resolvedAction = "equip"; break;
                 }
                 commandAction = resolvedAction;
             }
@@ -348,7 +369,10 @@
                         case "status": _player.DisplayStatus(); break;
                         case "use": HandleUseItem(argument); break;
                         case "equip": HandleEquipWeapon(argument); break;
-                        case "attack": HandleAttackMonster(); break;
+                        case "attack":
+                            HandleAttackMonster();
+                            currentPlayerActionIsAttack = true;
+                            break;
                         case "solve": HandleSolvePuzzle(); break;
                         case "help": DisplayGameInstructions(); break;
                         case "quit": HandleQuit(); break;
@@ -365,6 +389,10 @@
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"Error processing command '{commandWord}': {ex.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
+            }
+            finally
+            {
+                _playerAttackedLastTurn = currentPlayerActionIsAttack;
             }
         }
 
@@ -395,14 +423,14 @@
 
             if (nextRoom.IsLocked)
             {
-                bool hasKey = _player.Inventory.GetAllItems()
-                                     .OfType<Key>()
-                                     .Any(k => k.KeyId == nextRoom.RequiredKeyId);
-                if (hasKey)
+                Key matchingKey = _player.Inventory.GetAllItems()
+                                       .OfType<Key>()
+                                       .FirstOrDefault(k => k.KeyId == nextRoom.RequiredKeyId);
+
+                if (matchingKey != null)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Key usedKey = _player.Inventory.GetAllItems().OfType<Key>().First(k => k.KeyId == nextRoom.RequiredKeyId);
-                    Console.WriteLine($"You use '{usedKey.Name}' to unlock the way {direction.ToLower()}.");
+                    Console.WriteLine($"You use '{matchingKey.Name}' to unlock the way {direction.ToLower()}.");
                     Console.ForegroundColor = ConsoleColor.White;
                     nextRoom.IsLocked = false;
                 }
@@ -475,8 +503,8 @@
             if (itemInInventory == null)
             {
                 var useableMatches = _player.Inventory.GetUseableItems()
-                    .Where(item => ((Item)item).Name.ToLowerInvariant().Contains(itemName.ToLowerInvariant()))
-                    .ToList();
+                   .Where(item => ((Item)item).Name.ToLowerInvariant().Contains(itemName.ToLowerInvariant()))
+                   .ToList();
 
                 if (useableMatches.Count == 1)
                 {
@@ -667,7 +695,7 @@
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nThe mechanism buzzes angrily but you remain in the room (nowhere to go back to!).");
+                    Console.WriteLine("\nThe mechanism buzzes angrily but you remain in the room (nowhere to go back to!). The puzzle resets.");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }

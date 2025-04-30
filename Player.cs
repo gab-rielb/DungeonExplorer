@@ -48,31 +48,33 @@
         public Player(string name, int health = 100, int baseAttack = 5, int inventoryCapacity = 25)
             : base(name, health, health, baseAttack)
         {
-            Name = name;
+            _name = ValidateAndSetName(name);
+
             Inventory = new Inventory(inventoryCapacity);
             EquippedWeapon = _fists;
         }
 
         /// <summary>
-        /// Gets or sets the Name
+        /// Gets the Name
         /// </summary>
-        public new string Name
+        public new string Name => _name;
+
+        /// <summary>
+        /// The ValidateAndSetName
+        /// </summary>
+        /// <param name="name">The name<see cref="string"/></param>
+        /// <returns>The <see cref="string"/></returns>
+        private string ValidateAndSetName(string name)
         {
-            get { return _name; }
-            set
+            string trimmedName = name?.Trim();
+            if (string.IsNullOrWhiteSpace(trimmedName) || trimmedName.Length > 25)
             {
-                if (string.IsNullOrWhiteSpace(value) || value.Length > 25)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid player name provided (empty or > 25 chars). Using 'Adventurer'.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    _name = "Adventurer";
-                }
-                else
-                {
-                    _name = value;
-                }
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid player name provided (empty or > 25 chars). Using 'Adventurer'.");
+                Console.ForegroundColor = ConsoleColor.White;
+                return "Adventurer";
             }
+            return trimmedName;
         }
 
         /// <summary>
@@ -85,26 +87,24 @@
 
             string targetName = (target is Creature c) ? c.Name : "the target";
 
-            int actualDamage;
+            int weaponDamage = EquippedWeapon?.Damage ?? 0;
 
+            int totalDamage = _damage + weaponDamage;
+            totalDamage = Math.Max(0, totalDamage);
             Console.ForegroundColor = ConsoleColor.Green;
             if (EquippedWeapon != null && EquippedWeapon != _fists)
             {
-                actualDamage = _damage + EquippedWeapon.Damage;
                 Console.WriteLine($"{Name} attacks {targetName} with {EquippedWeapon.Name}!");
             }
             else
             {
-                actualDamage = _damage;
                 Console.WriteLine($"{Name} attacks {targetName} with bare fists!");
             }
 
-            actualDamage = Math.Max(0, actualDamage);
-
-            Console.WriteLine($"Dealing {actualDamage} damage.");
+            Console.WriteLine($"Dealing {totalDamage} damage.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            target.TakeDamage(actualDamage);
+            target.TakeDamage(totalDamage);
         }
 
         /// <summary>
@@ -114,20 +114,13 @@
         /// <returns>The <see cref="int"/></returns>
         public int Heal(int amount)
         {
-            if (amount <= 0 || !IsAlive) return 0;
+            if (amount <= 0 || !IsAlive || _health >= _maxHealth) return 0;
 
             int neededHealth = _maxHealth - _health;
             int actualHeal = Math.Min(amount, neededHealth);
 
-            if (actualHeal <= 0)
-            {
-                return 0;
-            }
-            else
-            {
-                _health += actualHeal;
-                return actualHeal;
-            }
+            _health += actualHeal;
+            return actualHeal;
         }
 
         /// <summary>
@@ -178,11 +171,7 @@
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine($"{Name} unequipped {weaponToUnequip.Name}.");
-                if (Inventory.AddItem(weaponToUnequip))
-                {
-                    Console.WriteLine($"Stored {weaponToUnequip.Name} in inventory.");
-                }
-                else
+                if (!Inventory.AddItem(weaponToUnequip))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Could not store {weaponToUnequip.Name}, inventory full! It was dropped!");
@@ -264,7 +253,10 @@
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"{Name} tried to pick up {item.Name}, but inventory is full!");
+                if (!(item is Key))
+                {
+                    Console.WriteLine($"{Name} tried to pick up {item.Name}, but inventory is full!");
+                }
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
@@ -278,25 +270,22 @@
             Console.WriteLine($"\n--- {Name} (Level {Level}) ---");
             Console.WriteLine($"Health: {_health}/{_maxHealth}");
 
-            int weaponDamageValue;
-            string weaponName;
+            int weaponDamageValue = (EquippedWeapon != null) ? EquippedWeapon.Damage : 0;
+            string weaponName = (EquippedWeapon != null) ? EquippedWeapon.Name : "Fists";
 
             if (EquippedWeapon != null && EquippedWeapon != _fists)
             {
-                weaponDamageValue = EquippedWeapon.Damage;
-                weaponName = EquippedWeapon.Name;
                 Console.WriteLine($"Attack Power: {_damage} (Base) + {weaponDamageValue} (from {weaponName}) = {_damage + weaponDamageValue} Total");
             }
             else
             {
-                weaponDamageValue = 0;
-                weaponName = "Fists";
-                Console.WriteLine($"Attack Power: {_damage} (Base, using {weaponName})");
+                Console.WriteLine($"Attack Power: {_damage} (Base) + {weaponDamageValue} ({weaponName}) = {_damage + weaponDamageValue} Total");
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"XP: {ExperiencePoints}/{_xpToNextLevel}");
             Console.ForegroundColor = ConsoleColor.White;
+
             Inventory.DisplayInventory();
         }
     }

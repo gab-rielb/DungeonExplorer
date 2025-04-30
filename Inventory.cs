@@ -34,7 +34,7 @@
         /// <summary>
         /// Gets the Count
         /// </summary>
-        public int Count => _items.Count;
+        public int Count => _items.Count(i => !(i is Key));
 
         /// <summary>
         /// Gets the Capacity
@@ -44,7 +44,7 @@
         /// <summary>
         /// Gets a value indicating whether IsFull
         /// </summary>
-        public bool IsFull => _items.Count >= _capacity;
+        public bool IsFull => Count >= _capacity;
 
         /// <summary>
         /// The AddItem
@@ -54,10 +54,17 @@
         public bool AddItem(Item item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
+
+            if (item is Key)
+            {
+                _items.Add(item);
+                return true;
+            }
             if (IsFull)
             {
                 return false;
             }
+
             _items.Add(item);
             return true;
         }
@@ -156,26 +163,38 @@
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"\n--- Inventory ({Count}/{Capacity}) ---");
-            if (Count == 0)
+
+            var regularItems = _items.Where(i => !(i is Key)).OrderBy(i => i.Name).ToList();
+            if (!regularItems.Any())
             {
-                Console.WriteLine("Empty");
+                Console.WriteLine("No regular items.");
             }
             else
             {
-                var sortedItems = GetItemsSortedByName();
-                var groupedItems = sortedItems
-                    .GroupBy(i => i.ToString())
-                    .Select(g => new { ItemInfo = g.Key, Count = g.Count() });
+                var groupedItems = regularItems
+                   .GroupBy(i => i.ToString())
+                   .Select(g => new { ItemInfo = g.Key, Count = g.Count() });
 
                 foreach (var group in groupedItems)
                 {
                     Console.WriteLine($"- {group.ItemInfo}{(group.Count > 1 ? $" (x{group.Count})" : "")}");
                 }
-
             }
-            Console.WriteLine("--------------------");
+
+            var keys = _items.OfType<Key>().OrderBy(k => k.Name).ToList();
+            if (keys.Any())
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("\n--- Keys (Do not use capacity) ---");
+                foreach (var key in keys)
+                {
+                    Console.WriteLine($"- {key.ToString()}");
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("-------------------------");
             Console.ForegroundColor = ConsoleColor.White;
         }
     }
-
 }

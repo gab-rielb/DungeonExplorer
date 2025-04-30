@@ -2,8 +2,15 @@
 using System.IO;
 using DungeonExplorer;
 
+/// <summary>
+/// Defines the <see cref="Program" />
+/// </summary>
 internal class Program
 {
+    /// <summary>
+    /// The Main
+    /// </summary>
+    /// <param name="args">The args<see cref="string[]"/></param>
     internal static void Main(string[] args)
     {
         Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -53,6 +60,9 @@ internal class Program
         Console.ReadKey(true);
     }
 
+    /// <summary>
+    /// The RunGame
+    /// </summary>
     internal static void RunGame()
     {
         try

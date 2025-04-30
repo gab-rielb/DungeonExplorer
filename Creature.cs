@@ -35,7 +35,7 @@
         /// <summary>
         /// Gets the Name
         /// </summary>
-        public string Name => _name;
+        public virtual string Name => _name;
 
         /// <summary>
         /// Gets the Health
@@ -66,14 +66,11 @@
         /// <param name="damage">The damage<see cref="int"/></param>
         protected Creature(string name, int health, int maxHealth, int damage)
         {
+            _name = string.IsNullOrWhiteSpace(name) ? "Unknown Creature" : name.Trim();
+            _maxHealth = Math.Max(1, maxHealth);
 
-            _name = name;
-
-            _health = health;
-
-            _maxHealth = maxHealth;
-
-            _damage = damage;
+            _health = Math.Min(_maxHealth, Math.Max(0, health));
+            _damage = Math.Max(0, damage);
         }
 
         /// <summary>
@@ -88,45 +85,28 @@
         /// <param name="damage">The damage<see cref="int"/></param>
         public virtual void TakeDamage(int damage)
         {
-
             if (!IsAlive) return;
 
-            if (damage < 0) damage = 0;
-
-            _health -= damage;
+            int actualDamage = Math.Max(0, damage);
+            _health -= actualDamage;
 
             Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.WriteLine($"{_name} took {damage} damage!");
-
+            Console.WriteLine($"{_name} took {actualDamage} damage!");
             Console.ForegroundColor = ConsoleColor.White;
 
             if (!IsAlive)
-
             {
-
                 _health = 0;
-
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-
                 Console.WriteLine($"{_name} has been defeated!");
-
                 Console.ForegroundColor = ConsoleColor.White;
-
             }
-
             else
-
             {
-
                 Console.ForegroundColor = ConsoleColor.Green;
-
                 Console.WriteLine($"{_name}'s health is now {_health}/{_maxHealth}.");
-
                 Console.ForegroundColor = ConsoleColor.White;
-
             }
         }
     }
-
 }

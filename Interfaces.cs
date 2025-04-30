@@ -23,28 +23,6 @@
     }
 
     /// <summary>
-    /// Defines the <see cref="ICollectable" />
-    /// </summary>
-    public interface ICollectable
-    {
-        /// <summary>
-        /// Gets the Name
-        /// </summary>
-        string Name { get; }
-
-        /// <summary>
-        /// Gets the Description
-        /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// The PickUp
-        /// </summary>
-        /// <param name="player">The player<see cref="Player"/></param>
-        void PickUp(Player player);
-    }
-
-    /// <summary>
     /// Defines the <see cref="IUseable" />
     /// </summary>
     public interface IUseable

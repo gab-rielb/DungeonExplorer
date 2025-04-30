@@ -4,51 +4,49 @@
     using DungeonExplorer.Items;
 
     /// <summary>
-    /// Defines the Goblin monster type.
+    /// Defines the <see cref="Goblin" />
     /// </summary>
     public class Goblin : Monster
     {
         /// <summary>
-        /// Base health for Goblins.
+        /// Defines the BASE_HEALTH
         /// </summary>
         public const int BASE_HEALTH = 25;
 
         /// <summary>
-        /// Base damage for Goblins.
+        /// Defines the BASE_DAMAGE
         /// </summary>
         public const int BASE_DAMAGE = 5;
 
         /// <summary>
-        /// Base experience points awarded for defeating a Goblin.
+        /// Defines the BASE_XP
         /// </summary>
         public const int BASE_XP = 30;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Goblin"/> class.
+        /// Initializes a new instance of the <see cref="Goblin"/> class.
         /// </summary>
         public Goblin()
-            : base("Goblin", BASE_HEALTH, BASE_DAMAGE, BASE_XP) // CORRECTED: Updated constructor call
+            : base("Goblin", BASE_HEALTH, BASE_DAMAGE, BASE_XP)
         {
             InitialiseLoot();
-            // Goblins use default CanFlee = true
         }
 
         /// <summary>
-        /// Initialises the Goblin's potential loot drops.
+        /// The InitialiseLoot
         /// </summary>
-        private void InitialiseLoot() // Corrected spelling
+        private void InitialiseLoot()
         {
             Loot.Add(new Potion("Crude Potion", "Barely effective.", 10));
             Loot.Add(new Food("Mouldy Bread", "A damp loaf.", 10));
-            // 10% chance to also carry a rusty dagger
             if (_random.Next(100) < 10)
                 Loot.Add(new Weapon("Rusty Dagger", "Small and chipped.", 3));
         }
 
         /// <summary>
-        /// Goblin's specific attack behaviour. Overrides the base monster attack.
+        /// The Attack
         /// </summary>
-        /// <param name="target">The target<see cref="IDamageable"/> to attack.</param>
+        /// <param name="target">The target<see cref="IDamageable"/></param>
         public override void Attack(IDamageable target)
         {
             if (!target.IsAlive || !this.IsAlive) return;
@@ -58,9 +56,8 @@
             Console.WriteLine($"{Name} lunges wildly at {targetName}!");
             Console.ForegroundColor = ConsoleColor.White;
 
-            // Goblins have slightly more variable damage, from half up to base+1
             int calculatedDamage = _random.Next(Damage / 2, Damage + 2);
-            calculatedDamage = Math.Max(0, calculatedDamage); // Ensure damage is not negative
+            calculatedDamage = Math.Max(0, calculatedDamage);
 
             target.TakeDamage(calculatedDamage);
         }
