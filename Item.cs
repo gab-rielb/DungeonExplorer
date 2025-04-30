@@ -23,16 +23,14 @@
         public bool IsUsable { get; protected set; } = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Item"/> class.
+        /// Initialises a new instance of the <see cref="Item"/> class.
         /// </summary>
         /// <param name="name">The name<see cref="string"/></param>
         /// <param name="description">The description<see cref="string"/></param>
         protected Item(string name, string description)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Item name cannot be null or empty.", nameof(name));
-            if (string.IsNullOrWhiteSpace(description))
-                description = "An indescribable item.";
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Item name cannot be null or empty.", nameof(name)); // The name cannot be null or empty.
+            if (string.IsNullOrWhiteSpace(description)) description = "An indescribable item."; // The description cannot be null or empty.
 
             Name = name.Trim();
             Description = description.Trim();
@@ -44,7 +42,7 @@
         /// <returns>The <see cref="string"/></returns>
         public override string ToString()
         {
-            return $"{Name}: {Description}";
+            return $"{Name}: {Description}"; // Override ToString to include name and description
         }
     }
 }

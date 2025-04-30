@@ -24,7 +24,7 @@
         public const int BASE_XP = 30;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Goblin"/> class.
+        /// Initialises a new instance of the <see cref="Goblin"/> class.
         /// </summary>
         public Goblin()
             : base("Goblin", BASE_HEALTH, BASE_DAMAGE, BASE_XP)
@@ -49,17 +49,17 @@
         /// <param name="target">The target<see cref="IDamageable"/></param>
         public override void Attack(IDamageable target)
         {
-            if (!target.IsAlive || !this.IsAlive) return;
+            if (!target.IsAlive || !this.IsAlive) return; // Check if the target and player are alive
 
-            string targetName = (target is Creature c) ? c.Name : "the target";
+            string targetName = (target is Creature c) ? c.Name : "the target"; // Get the target name
+
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"{Name} lunges wildly at {targetName}!");
             Console.ForegroundColor = ConsoleColor.White;
 
-            int calculatedDamage = _random.Next(Damage / 2, Damage + 2);
-            calculatedDamage = Math.Max(0, calculatedDamage);
-
-            target.TakeDamage(calculatedDamage);
+            int calculatedDamage = _random.Next(Damage / 2, Damage + 2); // Calculate damage
+            calculatedDamage = Math.Max(0, calculatedDamage); // Ensure damage is not negative
+            target.TakeDamage(calculatedDamage); // Apply damage to the target
         }
     }
 }

@@ -30,7 +30,7 @@
         protected Point CurrentPosition { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Monster"/> class.
+        /// Initialises a new instance of the <see cref="Monster"/> class.
         /// </summary>
         /// <param name="name">The name<see cref="string"/></param>
         /// <param name="initialHealth">The initialHealth<see cref="int"/></param>
@@ -47,35 +47,35 @@
         /// The Attack
         /// </summary>
         /// <param name="target">The target<see cref="IDamageable"/></param>
-        public override void Attack(IDamageable target)
+        public override void Attack(IDamageable target) // Attack method to be implemented by derived classes
         {
-            if (!target.IsAlive || !this.IsAlive) return;
+            if (!target.IsAlive || !this.IsAlive) return; // Check if the target and player are alive
 
-            string targetName = (target is Creature c) ? c.Name : "the target";
+            string targetName = (target is Creature c) ? c.Name : "the target"; // Get the target name
 
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"{Name} attacks {targetName}!");
             Console.ForegroundColor = ConsoleColor.White;
 
-            int calculatedDamage = _random.Next(1, Damage + 1);
-            calculatedDamage = Math.Max(0, calculatedDamage);
+            int calculatedDamage = _random.Next(1, Damage + 1); // Calculate damage
+            calculatedDamage = Math.Max(0, calculatedDamage); // Ensure damage is not negative
 
-            target.TakeDamage(calculatedDamage);
+            target.TakeDamage(calculatedDamage); // Apply damage to the target
         }
 
         /// <summary>
         /// The GetLootDrop
         /// </summary>
         /// <returns>The <see cref="Item"/></returns>
-        public virtual Item GetLootDrop()
+        public virtual Item GetLootDrop() // Drop loot after defeat
         {
-            if (Loot == null || !Loot.Any()) return null;
+            if (Loot == null || !Loot.Any()) return null; // Check if loot is available
 
-            int chance = _random.Next(100);
-            if (chance < 60)
+            int chance = _random.Next(100); // Random chance for loot drop
+            if (chance < 60) // 60% chance to drop loot
             {
-                int itemIndex = _random.Next(Loot.Count);
-                return Loot[itemIndex];
+                int itemIndex = _random.Next(Loot.Count); // Get a random index from the loot list
+                return Loot[itemIndex]; // Return the loot item
             }
             return null;
         }
@@ -86,17 +86,17 @@
         /// <param name="player">The player<see cref="Player"/></param>
         /// <param name="currentRoom">The currentRoom<see cref="Room"/></param>
         /// <param name="gameMap">The gameMap<see cref="GameMap"/></param>
-        public virtual void PerformAction(Player player, Room currentRoom, GameMap gameMap)
+        public virtual void PerformAction(Player player, Room currentRoom, GameMap gameMap) // Perform an action based on the monster's statistics
         {
-            if (!IsAlive || !player.IsAlive) return;
+            if (!IsAlive || !player.IsAlive) return; // Check if the monster and player are alive
 
-            CurrentPosition = currentRoom.Coordinates;
+            CurrentPosition = currentRoom.Coordinates; // Set the current position of the monster
 
-            if (CanFlee && (double)_health / _maxHealth < 0.30 && _random.Next(100) < 50)
+            if (CanFlee && (double)_health / _maxHealth < 0.30 && _random.Next(100) < 50) // 50% chance to flee if health is below 30%
             {
-                AttemptFlee(currentRoom, gameMap, player);
+                AttemptFlee(currentRoom, gameMap, player); // Attempt to flee
             }
-            else
+            else // otherwise, attack the player
             {
                 Attack(player);
             }
@@ -108,36 +108,38 @@
         /// <param name="currentRoom">The currentRoom<see cref="Room"/></param>
         /// <param name="gameMap">The gameMap<see cref="GameMap"/></param>
         /// <param name="player">The player<see cref="Player"/></param>
-        protected virtual void AttemptFlee(Room currentRoom, GameMap gameMap, Player player)
+        protected virtual void AttemptFlee(Room currentRoom, GameMap gameMap, Player player) // Attempt to flee from the current room
         {
-            string directionToFlee = null;
-            Point fleeToCoord = CurrentPosition;
+            string directionToFlee = null; // Default direction to flee
+            Point fleeToCoord = CurrentPosition; // Default to current position
 
-            if (CurrentPosition.X > 0) directionToFlee = Direction.Left;
-            else if (CurrentPosition.X < 0) directionToFlee = Direction.Right;
-            Room fleeToRoom = null;
-            if (!string.IsNullOrEmpty(directionToFlee) && currentRoom.Exits.TryGetValue(directionToFlee, out fleeToRoom))
+            if (CurrentPosition.X > 0) directionToFlee = Direction.Left; // Flee left
+            else if (CurrentPosition.X < 0) directionToFlee = Direction.Right; // Flee right
+
+            Room fleeToRoom = null; // Get the room to flee to
+
+            if (!string.IsNullOrEmpty(directionToFlee) && currentRoom.Exits.TryGetValue(directionToFlee, out fleeToRoom)) // Check if the room exists
             {
-                fleeToCoord = fleeToRoom.Coordinates;
+                fleeToCoord = fleeToRoom.Coordinates; // Set the coordinates to flee to
             }
             else
             {
                 fleeToRoom = null;
             }
 
-            if (fleeToRoom != null)
+            if (fleeToRoom != null) // Check if the room to flee to is valid
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"{Name} is badly wounded and attempts to flee {directionToFlee.ToLower()}!");
                 Console.ForegroundColor = ConsoleColor.White;
 
-                bool removed = currentRoom.MonstersInRoom.Remove(this);
-                if (removed)
+                bool removed = currentRoom.MonstersInRoom.Remove(this); // Remove the monster from the current room
+                if (removed) // Check if the monster was removed successfully
                 {
-                    fleeToRoom.AddMonster(this);
-                    this.CurrentPosition = fleeToCoord;
-                    this.HealToPercent(50);
-                    this.CanFlee = false;
+                    fleeToRoom.AddMonster(this); // Add the monster to the new room
+                    this.CurrentPosition = fleeToCoord; // Update the current position
+                    this.HealToPercent(50); // Heal to 50% of max health
+                    this.CanFlee = false; // Set CanFlee to false
 
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"{Name} retreated to {fleeToCoord} and recovered slightly! It won't flee again.");
@@ -164,18 +166,18 @@
         /// The HealToPercent
         /// </summary>
         /// <param name="percent">The percent<see cref="int"/></param>
-        protected void HealToPercent(int percent)
+        protected void HealToPercent(int percent) // Heal the monster to a specific percentage of its max health
         {
-            if (!IsAlive) return;
-            percent = Math.Max(0, Math.Min(percent, 100));
+            if (!IsAlive) return; // Check if the monster is alive
+            percent = Math.Max(0, Math.Min(percent, 100)); // Clamp the percentage between 0 and 100
 
-            int targetHealth = (int)Math.Ceiling((double)_maxHealth * percent / 100.0);
-            int healAmount = targetHealth - _health;
+            int targetHealth = (int)Math.Ceiling((double)_maxHealth * percent / 100.0); // Calculate target health
+            int healAmount = targetHealth - _health; // Calculate heal amount
 
-            if (healAmount > 0)
+            if (healAmount > 0) // Check if heal amount is positive
             {
-                _health += healAmount;
-                _health = Math.Min(_health, _maxHealth);
+                _health += healAmount; // Heal the monster
+                _health = Math.Min(_health, _maxHealth); // Ensure health does not exceed max health
             }
         }
 
@@ -183,12 +185,12 @@
         /// The ApplyHealthBoost
         /// </summary>
         /// <param name="boostedMaxHealth">The boostedMaxHealth<see cref="int"/></param>
-        public void ApplyHealthBoost(int boostedMaxHealth)
+        public void ApplyHealthBoost(int boostedMaxHealth) // Apply a health boost to the monster
         {
-            if (boostedMaxHealth > 0)
+            if (boostedMaxHealth > 0) // Check if the boosted max health is valid
             {
-                _maxHealth = boostedMaxHealth;
-                _health = boostedMaxHealth;
+                _maxHealth = boostedMaxHealth; // Set the new max health
+                _health = boostedMaxHealth; // Heal the monster to the new max health
             }
         }
     }

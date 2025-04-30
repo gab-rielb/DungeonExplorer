@@ -28,7 +28,7 @@ internal class Program
         string choice = "";
         bool validInput = false;
 
-        while (!validInput)
+        while (!validInput) // Loop until valid input is received
         {
             Console.Write("Enter your choice (1 or 2): ");
             Console.ForegroundColor = ConsoleColor.White;
@@ -63,9 +63,9 @@ internal class Program
     /// <summary>
     /// The RunGame
     /// </summary>
-    internal static void RunGame()
+    internal static void RunGame() // This method starts the game
     {
-        try
+        try // Check for any exceptions during game startup
         {
             Game game = new Game();
             game.Start();

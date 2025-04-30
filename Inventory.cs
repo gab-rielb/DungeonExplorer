@@ -21,12 +21,12 @@
         private int _capacity;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Inventory"/> class.
+        /// Initialises a new instance of the <see cref="Inventory"/> class.
         /// </summary>
         /// <param name="capacity">The capacity<see cref="int"/></param>
         public Inventory(int capacity = 25)
         {
-            if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Inventory capacity must be positive.");
+            if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Inventory capacity must be positive."); // The capacity should be a positive integer.
             _items = new List<Item>();
             _capacity = capacity;
         }
@@ -51,22 +51,21 @@
         /// </summary>
         /// <param name="item">The item<see cref="Item"/></param>
         /// <returns>The <see cref="bool"/></returns>
-        public bool AddItem(Item item)
+        public bool AddItem(Item item) // Adds an item to the inventory
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null) throw new ArgumentNullException(nameof(item)); // The item cannot be null.
 
-            if (item is Key)
+            if (item is Key) // Keys do not count towards capacity
             {
-                _items.Add(item);
-                return true;
+                _items.Add(item); // Add the key to the inventory
+                return true; // Item added successfully
             }
-            if (IsFull)
+            if (IsFull) // The inventory is full
             {
-                return false;
+                return false; // Cannot add the item
             }
-
-            _items.Add(item);
-            return true;
+            _items.Add(item); // Add the item to the inventory
+            return true; // Item added successfully
         }
 
         /// <summary>
@@ -74,10 +73,10 @@
         /// </summary>
         /// <param name="item">The item<see cref="Item"/></param>
         /// <returns>The <see cref="bool"/></returns>
-        public bool RemoveItem(Item item)
+        public bool RemoveItem(Item item) // Removes an item from the inventory
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            return _items.Remove(item);
+            if (item == null) throw new ArgumentNullException(nameof(item)); // The item cannot be null
+            return _items.Remove(item); // Remove the item from the inventory
         }
 
         /// <summary>
@@ -85,87 +84,88 @@
         /// </summary>
         /// <param name="name">The name<see cref="string"/></param>
         /// <returns>The <see cref="Item"/></returns>
-        public Item GetItemByName(string name)
+        public Item GetItemByName(string name) // Gets an item by its name
         {
-            if (string.IsNullOrWhiteSpace(name)) return null;
-            return _items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrWhiteSpace(name)) return null; // The name cannot be null or empty
+            return _items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase)); // Find the item by name
         }
 
         /// <summary>
         /// The GetAllItems
         /// </summary>
         /// <returns>The <see cref="List{Item}"/></returns>
-        public List<Item> GetAllItems()
+        public List<Item> GetAllItems() // Gets all items in the inventory
         {
-            return new List<Item>(_items);
+            return new List<Item>(_items); // Return a copy of the items list
         }
 
         /// <summary>
         /// The GetWeapons
         /// </summary>
         /// <returns>The <see cref="List{Weapon}"/></returns>
-        public List<Weapon> GetWeapons()
+        public List<Weapon> GetWeapons() // Gets all weapons in the inventory
         {
-            return _items.OfType<Weapon>().ToList();
+            return _items.OfType<Weapon>().ToList(); // Return a list of weapons
         }
 
         /// <summary>
         /// The GetUseableItems
         /// </summary>
         /// <returns>The <see cref="List{IUseable}"/></returns>
-        public List<IUseable> GetUseableItems()
+        public List<IUseable> GetUseableItems() // Gets all useable items in the inventory
         {
-            return _items.OfType<IUseable>().ToList();
+            return _items.OfType<IUseable>().ToList(); // Return a list of useable items
         }
 
         /// <summary>
         /// The GetPotions
         /// </summary>
         /// <returns>The <see cref="List{Potion}"/></returns>
-        public List<Potion> GetPotions()
+        public List<Potion> GetPotions() // Gets all potions in the inventory
         {
-            return _items.OfType<Potion>().ToList();
+            return _items.OfType<Potion>().ToList(); // Return a list of potions
         }
 
         /// <summary>
         /// The GetFood
         /// </summary>
         /// <returns>The <see cref="List{Food}"/></returns>
-        public List<Food> GetFood()
+        public List<Food> GetFood() // Gets all food items in the inventory
         {
-            return _items.OfType<Food>().ToList();
+            return _items.OfType<Food>().ToList(); // Return a list of food items
         }
 
         /// <summary>
         /// The GetStrongestWeapon
         /// </summary>
         /// <returns>The <see cref="Weapon"/></returns>
-        public Weapon GetStrongestWeapon()
+        public Weapon GetStrongestWeapon() // Gets the strongest weapon in the inventory
         {
             return _items.OfType<Weapon>()
                          .OrderByDescending(w => w.Damage)
-                         .FirstOrDefault();
+                         .FirstOrDefault(); // Return the strongest weapon
         }
 
         /// <summary>
         /// The GetItemsSortedByName
         /// </summary>
         /// <returns>The <see cref="List{Item}"/></returns>
-        public List<Item> GetItemsSortedByName()
+        public List<Item> GetItemsSortedByName() // Gets all items sorted by name
         {
-            return _items.OrderBy(i => i.Name).ToList();
+            return _items.OrderBy(i => i.Name).ToList(); // Return a list of items sorted by name
         }
 
         /// <summary>
         /// The DisplayInventory
         /// </summary>
-        public void DisplayInventory()
+        public void DisplayInventory() // Displays the inventory
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"\n--- Inventory ({Count}/{Capacity}) ---");
+            Console.ForegroundColor = ConsoleColor.Cyan; // Set the color to cyan
+            Console.WriteLine($"\n--- Inventory ({Count}/{Capacity}) ---"); // Display the inventory header
 
-            var regularItems = _items.Where(i => !(i is Key)).OrderBy(i => i.Name).ToList();
-            if (!regularItems.Any())
+            var regularItems = _items.Where(i => !(i is Key)).OrderBy(i => i.Name).ToList(); // Get regular items sorted by name
+
+            if (!regularItems.Any()) // No regular items in the inventory
             {
                 Console.WriteLine("No regular items.");
             }
@@ -173,16 +173,16 @@
             {
                 var groupedItems = regularItems
                    .GroupBy(i => i.ToString())
-                   .Select(g => new { ItemInfo = g.Key, Count = g.Count() });
+                   .Select(g => new { ItemInfo = g.Key, Count = g.Count() }); // Group items by name and count them
 
-                foreach (var group in groupedItems)
+                foreach (var group in groupedItems) // Display grouped items
                 {
                     Console.WriteLine($"- {group.ItemInfo}{(group.Count > 1 ? $" (x{group.Count})" : "")}");
                 }
             }
 
-            var keys = _items.OfType<Key>().OrderBy(k => k.Name).ToList();
-            if (keys.Any())
+            var keys = _items.OfType<Key>().OrderBy(k => k.Name).ToList(); // Get keys sorted by name
+            if (keys.Any()) // Display keys
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n--- Keys (Do not use capacity) ---");

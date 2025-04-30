@@ -58,7 +58,7 @@
         public int Damage => _damage;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Creature"/> class.
+        /// Initialises a new instance of the <see cref="Creature"/> class.
         /// </summary>
         /// <param name="name">The name<see cref="string"/></param>
         /// <param name="health">The health<see cref="int"/></param>
@@ -77,18 +77,18 @@
         /// The Attack
         /// </summary>
         /// <param name="target">The target<see cref="IDamageable"/></param>
-        public abstract void Attack(IDamageable target);
+        public abstract void Attack(IDamageable target); // Attack method to be implemented by derived classes
 
         /// <summary>
         /// The TakeDamage
         /// </summary>
         /// <param name="damage">The damage<see cref="int"/></param>
-        public virtual void TakeDamage(int damage)
+        public virtual void TakeDamage(int damage) // Apply damage to the creature
         {
-            if (!IsAlive) return;
+            if (!IsAlive) return; // Check if the creature is alive
 
-            int actualDamage = Math.Max(0, damage);
-            _health -= actualDamage;
+            int actualDamage = Math.Max(0, damage); // Ensure damage is not negative
+            _health -= actualDamage; // Apply damage
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"{_name} took {actualDamage} damage!");
