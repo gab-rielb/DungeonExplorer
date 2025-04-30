@@ -398,6 +398,7 @@
 
         /// <summary>
         /// The MovePlayer
+        /// Displays the outcome of the game (win or lose).
         /// </summary>
         /// <param name="direction">The direction<see cref="string"/></param>
         private void MovePlayer(string direction) // Move player in the spcecified directions
@@ -723,6 +724,7 @@
         /// The DisplayGameResult
         /// </summary>
         private void DisplayGameResult() // Display the game result
+        public void PlayTurn()
         {
             Console.WriteLine("\n=========================================");
             if (_player == null) return; // Check if player is null

@@ -1,4 +1,10 @@
+
 ﻿namespace DungeonExplorer
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace DungeonExplorer
 {
     using System;
     using DungeonExplorer.Items;
@@ -75,6 +81,25 @@
                 return "Adventurer"; // Default name
             }
             return trimmedName; // Set the trimmed name
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                // Validate the name (not null, empty, or too long)
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 25)
+                {
+                    Console.WriteLine("\nErroneous input, default player name used instead.");
+                    _name = "default_player"; // Default name if invalid input
+                }
+                else
+                {
+                    _name = value;
+                }
+            }
         }
 
         /// <summary>
@@ -82,6 +107,7 @@
         /// </summary>
         /// <param name="target">The target<see cref="IDamageable"/></param>
         public override void Attack(IDamageable target) // Attack method
+        public int Health
         {
             if (target == null || !target.IsAlive || !this.IsAlive) return; // Check if the target and player are alive
 
@@ -177,6 +203,15 @@
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Could not store {weaponToUnequip.Name}, inventory full! It was dropped!");
                     Console.ForegroundColor = ConsoleColor.White;
+                // Ensure health is within the range 0-100
+                if (value < 1 || value > 100)
+                {
+                    throw new ArgumentOutOfRangeException("\nHealth must be between 1 and 100.");
+                }
+                else
+                {
+                    _health = value;
+                    Debug.Assert(_health >= 0 && _health <= 100, "Player health is out of range.");
                 }
                 Console.ForegroundColor = ConsoleColor.White;
             }
@@ -204,6 +239,11 @@
             Console.ForegroundColor = ConsoleColor.White;
 
             while (ExperiencePoints >= _xpToNextLevel && IsAlive) // Check if the player has enough experience points to level up
+            get
+            {
+                return _inventory;
+            }
+            set
             {
                 LevelUp(); // Level up the player
             }
@@ -213,6 +253,10 @@
         /// The LevelUp
         /// </summary>
         private void LevelUp() // Level up the player
+        /// <param name="name">The player's name.</param>
+        /// <param name="health">The player's starting health.</param>
+        /// <param name="inventory">The player's starting inventory.</param>
+        public Player(string name, int health, List<string> inventory)
         {
             Level++; // Increase the player's level
             ExperiencePoints -= _xpToNextLevel; // Subtract the experience points needed for the next level
@@ -260,6 +304,13 @@
                 }
                 Console.ForegroundColor = ConsoleColor.White;
             }
+            if (string.IsNullOrWhiteSpace(item))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new ArgumentException("\nItem cannot be null or empty.");
+            }
+            _inventory.Add(item);
+            Debug.Assert(_inventory.Contains(item), $"Item '{item}' was not added to the inventory.");
         }
 
         /// <summary>

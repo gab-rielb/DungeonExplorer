@@ -1,4 +1,10 @@
 ﻿namespace DungeonExplorer
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+namespace DungeonExplorer
 {
     using System;
     using System.Collections.Generic;
@@ -110,6 +116,13 @@
                 PuzzleKeyId = Math.Abs(coordinates.X * 19 + coordinates.Y * 29 + generationLevel * 13);
                 Description += $" A strange mechanism (ID: {PuzzleKeyId}) blocks the path ahead.";
             }
+            if (string.IsNullOrEmpty(type))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                throw new ArgumentException("\nRoom type cannot be null or empty");
+            }
+            Type = type;
+            Debug.Assert(!string.IsNullOrWhiteSpace(Type), "Room type was not initialized.");
         }
 
         /// <summary>
@@ -172,6 +185,12 @@
             _puzzleFailed = true; // Mark the puzzle as failed
             Description = GetDefaultDescription(GeneratedType) + $" The mechanism (ID: {PuzzleKeyId}) buzzes angrily and remains sealed.";
         }
+                case 3:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("You discover a hidden shortcut! You advance two rooms.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    roomsPassed++; // Advance an extra room
+                    break;
 
         /// <summary>
         /// The ResetPuzzleFailFlag
@@ -223,7 +242,6 @@
         {
             if (monster != null) MonstersInRoom.Remove(monster); // Check if the monster is not null
         }
-
         /// <summary>
         /// The AddItem
         /// </summary>
@@ -241,6 +259,64 @@
         {
             if (item != null) ItemsInRoom.Remove(item); // Check if the item is not null
         }
+                case 3:
+                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                    Console.WriteLine("You find a mysterious potion. You feel compelled to drink it!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    int potionEffect = _random.Next(1, 4);  // 1 = good, 2 = bad, 3 = forced direction
+                    if (potionEffect == 1)
+                    {
+                        int heal = _random.Next(5, 16);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"The potion heals you for {heal} health");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        if (player.Health + heal > 100)
+                        {
+                            player.Health = 100; // Cap health at 100
+                        }
+                        else
+                        {
+                            player.Health += heal;
+                        }
+                        roomsPassed++;
+                    }
+                    else if (potionEffect == 2)
+                    {
+                        int damage = _random.Next(5, 16); // Random damage between 5 and 15
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"The potion damages you for {damage} health");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        player.Health -= damage;
+                        roomsPassed++;
+                    }
+                    else
+                    {
+                        forcedDirectionCounter = _random.Next(1, 4); // Random forced direction between 1 and 3 turns
+                        int direction = _random.Next(1, 4); // 1 forward, 2 left, 3 right
+                        if (direction == 1)
+                        {
+                            forcedDirection = "forward";
+                        }
+                        else if (direction == 2)
+                        {
+                            forcedDirection = "left";
+                        }
+                        else
+                        {
+                            forcedDirection = "right";
+                        }
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        Console.WriteLine($"The potion hynotises you" +
+                            $" in a trance you to go {forcedDirection} for the next {forcedDirectionCounter} turns.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        roomsPassed++;
+                    }
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("\n\n\nAn error occured generating the mystery room.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
 
         /// <summary>
         /// The AddExit
