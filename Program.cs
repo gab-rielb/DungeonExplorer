@@ -56,7 +56,7 @@ internal class Program
             }
         }
 
-        Console.WriteLine("\n\nProgramme finished. Press any key to exit...");
+        Console.WriteLine("\n\nProgram finished. Press any key to exit...");
         Console.ReadKey(true);
     }
 
