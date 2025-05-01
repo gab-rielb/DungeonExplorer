@@ -29,15 +29,6 @@ internal class Program
         bool validInput = false;
 
         while (!validInput) // Loop until valid input is received
-    /// The main entry point of the Dungeon Explorer game.
-    /// </summary>
-    internal class Program
-    {
-        /// <summary>
-        /// The main method that initialises and runs the game.
-        /// </summary>
-        /// <param name="args">Command Line arguments (not used)</param>
-        static void Main(string[] args)
         {
             Console.Write("Enter your choice (1 or 2): ");
             Console.ForegroundColor = ConsoleColor.White;
@@ -97,9 +88,6 @@ internal class Program
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine($"Failed to write to error log: {logEx.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
-                // Ensure the console window stays open until the user presses a key
-                Console.WriteLine("\n\nEnd of code. Press any key to exit...");
-                Console.ReadKey();
             }
         }
     }

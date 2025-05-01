@@ -49,7 +49,7 @@
         {
             try
             {
-                using (_logWriter = new StreamWriter(_logFilePath, append: true)) 
+                using (_logWriter = new StreamWriter(_logFilePath, append: true))
                 {
                     Log($"\n--- Starting Test Run: {DateTime.Now:yyyy-MM-dd HH:mm:ss} ---"); // Log the start time of the test run.
 
@@ -705,7 +705,7 @@
             /// Initialises a new instance of the <see cref="TestAssertionException"/> class.
             /// </summary>
             /// <param name="message">The message<see cref="string"/></param>
-            public TestAssertionException(string message) : base(message) 
+            public TestAssertionException(string message) : base(message)
             {
             }
         }
