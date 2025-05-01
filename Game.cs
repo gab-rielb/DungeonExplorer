@@ -656,7 +656,7 @@
                         answer = n1 * n2; qText = $"{n1} * {n2}"; break;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Cyan; Console.Write($"Question {i + 1} of {questionsNeeded}: What is {qText}? "); Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Cyan; Console.Write($"Question {i + 1} of {questionsNeeded}: What is {qText} = "); Console.ForegroundColor = ConsoleColor.White;
                 string inputAnswer = Console.ReadLine(); // Get user input
 
                 if (int.TryParse(inputAnswer, out int userAnswer) && userAnswer == answer) // Check if the answer is correct
